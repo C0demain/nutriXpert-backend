@@ -6,8 +6,9 @@ import java.util.UUID;
 import br.com.codemain.nutrixpertai.dto.UserCreateDTO;
 import br.com.codemain.nutrixpertai.dto.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.entity.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface IUserService {
+public interface IUserService extends UserDetailsService {
 
     public User create(UserCreateDTO user);
 
