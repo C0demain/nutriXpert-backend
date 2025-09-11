@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.codemain.nutrixpertai.dto.UserCreateDTO;
-import br.com.codemain.nutrixpertai.dto.UserUpdateDTO;
-import br.com.codemain.nutrixpertai.entity.User;
+import br.com.codemain.nutrixpertai.dto.User.UserAnamneseDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserCreateDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,32 +35,44 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "Cria usuário")
-    public ResponseEntity<User> create(@RequestBody UserCreateDTO userDTO) {
-        User created = userService.create(userDTO);
+    public ResponseEntity<UserResponseDTO> create(@RequestBody UserCreateDTO userDTO) {
+        UserResponseDTO created = userService.create(userDTO);
 
         return ResponseEntity
                 .created(URI.create("/user/" + created.getId()))
                 .body(created);
     }
 
+    @PatchMapping(value = "anamnese/{id}")
+    @Operation(summary = "Atualiza anamnese usuário")
+    public ResponseEntity<UserResponseDTO> updateAnamnese(
+            @PathVariable("id") UUID id,
+            @RequestBody UserAnamneseDTO userAnamneseDTO) {
+        UserResponseDTO updated = userService.updateAnamnese(id, userAnamneseDTO);
+
+        return ResponseEntity.ok().body(updated);
+    }
+
     @GetMapping
     @Operation(summary = "Busca todos os usuários")
-    public ResponseEntity<List<User>> getAll() {
-        return ResponseEntity.ok().body(userService.getAll());
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
+        List<UserResponseDTO> users = userService.getAll();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Busca usuário por ID")
-    public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok().body(userService.getById(id));
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable("id") UUID id) {
+        UserResponseDTO user = userService.getById(id);
+        return ResponseEntity.ok().body(user);
     }
 
     @PatchMapping(value = "/{id}")
     @Operation(summary = "Atualiza um usuário")
-    public ResponseEntity<User> update(
+    public ResponseEntity<UserResponseDTO> update(
             @PathVariable("id") UUID id,
             @RequestBody UserUpdateDTO userDTO) {
-        User updated = userService.update(id, userDTO);
+        UserResponseDTO updated = userService.update(id, userDTO);
 
         return ResponseEntity.ok().body(updated);
     }
