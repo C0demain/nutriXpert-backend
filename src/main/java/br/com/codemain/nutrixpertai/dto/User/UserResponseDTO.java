@@ -1,14 +1,16 @@
-package br.com.codemain.nutrixpertai.dto;
+package br.com.codemain.nutrixpertai.dto.User;
+
+import java.util.UUID;
 
 import br.com.codemain.nutrixpertai.enums.Role;
 
-public class UserCreateDTO {
+public class UserResponseDTO {
+
+    private UUID id;
 
     private String name;
 
     private String email;
-
-    private String password;
 
     private Role role;
 
@@ -20,8 +22,20 @@ public class UserCreateDTO {
 
     private String illnesses;
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -30,18 +44,6 @@ public class UserCreateDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Role getRole() {
@@ -83,7 +85,5 @@ public class UserCreateDTO {
     public void setIllnesses(String illnesses) {
         this.illnesses = illnesses;
     }
-
-    
 
 }

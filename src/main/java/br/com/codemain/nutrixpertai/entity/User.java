@@ -34,16 +34,16 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String height;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String weight;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String habits;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String illnesses;
 
     public User() {
