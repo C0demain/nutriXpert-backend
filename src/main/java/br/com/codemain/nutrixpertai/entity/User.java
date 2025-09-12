@@ -33,16 +33,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String height;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String weight;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String habits;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String illnesses;
 
     @CreationTimestamp
@@ -50,6 +50,13 @@ public class User implements UserDetails {
     private Date createdAt;
 
     public User() {
+    }
+
+    public User(String name, String email, String password, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public User(String name, String email, String password, Role role, String height, String weight, String habits,
@@ -82,22 +89,22 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public UUID getId() {

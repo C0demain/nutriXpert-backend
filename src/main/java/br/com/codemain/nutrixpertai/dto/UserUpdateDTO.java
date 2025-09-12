@@ -87,6 +87,5 @@ public class UserUpdateDTO {
         this.illnesses = illnesses;
     }
 
-    
 
 }
