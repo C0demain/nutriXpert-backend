@@ -2,11 +2,11 @@ package br.com.codemain.nutrixpertai.enums;
 
 public enum Role {
 
-    ROLE_ADMIN("Administrator"),
+    ADMIN("Administrator"),
 
-    ROLE_USER("Standard User"),
+    USER("User"),
     
-    ROLE_NUTRITIONIST("Nutritionist");
+    NUTRITIONIST("Nutritionist");
 
     private final String description;
 

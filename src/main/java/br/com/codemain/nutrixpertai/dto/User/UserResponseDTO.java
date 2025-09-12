@@ -12,6 +12,8 @@ public class UserResponseDTO {
 
     private String email;
 
+    private String password;
+
     private Role role;
 
     private String height;
@@ -22,20 +24,8 @@ public class UserResponseDTO {
 
     private String illnesses;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {
@@ -44,6 +34,18 @@ public class UserResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Role getRole() {
@@ -85,5 +87,6 @@ public class UserResponseDTO {
     public void setIllnesses(String illnesses) {
         this.illnesses = illnesses;
     }
+
 
 }
