@@ -24,8 +24,20 @@ public class UserResponseDTO {
 
     private String illnesses;
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -34,10 +46,6 @@ public class UserResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPassword() {
