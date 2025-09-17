@@ -36,7 +36,6 @@ public class TokenService {
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            // Retorna o token
             return JWT.require(algorithm)
                     .withIssuer("nutrixpert-api")
                     .build()
