@@ -1,7 +1,6 @@
 package br.com.codemain.nutrixpertai.controller;
 
 import br.com.codemain.nutrixpertai.dto.Auth.AuthenticationDTO;
-import br.com.codemain.nutrixpertai.dto.Auth.LoginResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Auth.RegisterDTO;
 import br.com.codemain.nutrixpertai.service.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,9 +24,15 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO body) {
-        var loginResponse = authenticationService.login(body.email(), body.password());
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO body) {
+        try {
+            var loginResponse = authenticationService.login(body.email(), body.password());
+            return ResponseEntity.ok(loginResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @PostMapping("/register")

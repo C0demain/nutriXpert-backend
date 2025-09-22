@@ -9,6 +9,7 @@ import br.com.codemain.nutrixpertai.service.IAuthenticationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,15 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private TokenService tokenService;
 
     public LoginResponseDTO login(String email, String password) {
-        var authToken = new UsernamePasswordAuthenticationToken(email, password);
-        var auth = authenticationManager.authenticate(authToken);
-        var user = (User) auth.getPrincipal();
-        var token = tokenService.generateToken(user);
-        return new LoginResponseDTO(user.getId().toString(), token);
+        try {
+            var authToken = new UsernamePasswordAuthenticationToken(email, password);
+            var auth = authenticationManager.authenticate(authToken);
+            var user = (User) auth.getPrincipal();
+            var token = tokenService.generateToken(user);
+            return new LoginResponseDTO(user.getId().toString(), token);
+        } catch (BadCredentialsException e) {
+            throw new IllegalArgumentException("E-mail ou senha inválidos");
+        }
     }
 
     public void register(RegisterDTO body) {
@@ -43,8 +48,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 body.name(),
                 body.email(),
                 hashedPassword,
-                body.role()
-        );
+                body.role());
 
         userRepository.save(newUser);
     }
