@@ -18,7 +18,6 @@ import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
 import br.com.codemain.nutrixpertai.service.IUserService;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -29,12 +28,23 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserResponseDTO updateAnamnese(UUID id, UserAnamneseDTO userAnamneseDTO) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        user.setHeight(userAnamneseDTO.getHeight());
-        user.setWeight(userAnamneseDTO.getWeight());
-        user.setHabits(userAnamneseDTO.getHabits());
-        user.setIllnesses(userAnamneseDTO.getIllnesses());
+        if (userAnamneseDTO.getHeight() != null) {
+            user.setHeight(userAnamneseDTO.getHeight());
+        }
+
+        if (userAnamneseDTO.getWeight() != null) {
+            user.setWeight(userAnamneseDTO.getWeight());
+        }
+
+        if (userAnamneseDTO.getHabits() != null) {
+            user.setHabits(userAnamneseDTO.getHabits());
+        }
+
+        if (userAnamneseDTO.getIllnesses() != null) {
+            user.setIllnesses(userAnamneseDTO.getIllnesses());
+        }
 
         userRepository.save(user);
 
@@ -55,17 +65,29 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não existe!"));
 
         // Checa unicidade do e-mail se mudou
-        if (!user.getEmail().equalsIgnoreCase(userDTO.getEmail())
-                && userRepository.existsByEmailAndIdNot(userDTO.getEmail(), id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já em uso por outro usuário.");
+        if (userDTO.getEmail() != null) {
+            // Checa unicidade do e-mail se mudou
+            if (!user.getEmail().equalsIgnoreCase(userDTO.getEmail())
+                    && userRepository.existsByEmailAndIdNot(userDTO.getEmail(), id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já em uso por outro usuário.");
+            }
+            user.setEmail(userDTO.getEmail());
         }
 
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setRole(userDTO.getRole());
-
-        String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.getPassword());
-        user.setPassword(hashedPassword);
+        // Atualiza só os campos enviados
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
+        if (userDTO.getRole() != null) {
+            user.setRole(userDTO.getRole());
+        }
+        if (userDTO.getPassword() != null) {
+            String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+            user.setPassword(hashedPassword);
+        }
 
         userRepository.save(user);
 

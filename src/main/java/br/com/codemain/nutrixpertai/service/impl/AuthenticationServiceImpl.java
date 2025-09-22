@@ -28,6 +28,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     public LoginResponseDTO login(String email, String password) {
         try {
+            if (userRepository.findByEmail(email) == null) {
+                throw new IllegalArgumentException("E-mail informado não encontrado");
+            }
+
             var authToken = new UsernamePasswordAuthenticationToken(email, password);
             var auth = authenticationManager.authenticate(authToken);
             var user = (User) auth.getPrincipal();
