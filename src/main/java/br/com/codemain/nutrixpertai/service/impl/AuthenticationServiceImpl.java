@@ -1,10 +1,12 @@
-package br.com.codemain.nutrixpertai.service;
+package br.com.codemain.nutrixpertai.service.impl;
 
 import br.com.codemain.nutrixpertai.dto.LoginResponseDTO;
 import br.com.codemain.nutrixpertai.dto.RegisterDTO;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.infra.security.TokenService;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
+import br.com.codemain.nutrixpertai.service.IAuthenticationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Autowired
     private UserRepository userRepository;

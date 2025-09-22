@@ -10,5 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface UserRepository extends JpaRepository<User, UUID>{
 
     boolean existsByEmailAndIdNot(String email, UUID id);
+    
     UserDetails findByEmail(String email);
 }

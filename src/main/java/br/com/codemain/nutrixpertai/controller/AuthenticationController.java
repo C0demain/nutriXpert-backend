@@ -3,7 +3,7 @@ package br.com.codemain.nutrixpertai.controller;
 import br.com.codemain.nutrixpertai.dto.AuthenticationDTO;
 import br.com.codemain.nutrixpertai.dto.LoginResponseDTO;
 import br.com.codemain.nutrixpertai.dto.RegisterDTO;
-import br.com.codemain.nutrixpertai.service.AuthenticationService;
+import br.com.codemain.nutrixpertai.service.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class AuthenticationController {
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private IAuthenticationService authenticationService;
 
     @PostMapping("/login")
     @Operation(summary = "Login")

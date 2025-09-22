@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
+
     @Value("${api.security.token.secret}")
     private String secret;
 
@@ -35,14 +36,14 @@ public class TokenService {
     public String validateToken(String token){
         try{
             Algorithm algorithm = Algorithm.HMAC256(secret);
-
+            
             return JWT.require(algorithm)
                     .withIssuer("nutrixpert-api")
                     .build()
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException e) {
-            return "";
+            return null;
         }
     }
 
