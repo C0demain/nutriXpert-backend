@@ -1,9 +1,11 @@
 package br.com.codemain.nutrixpertai.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.com.codemain.nutrixpertai.dto.User.UserAnamneseDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
@@ -58,12 +61,20 @@ public class UserController {
 
     @PatchMapping(value = "/{id}")
     @Operation(summary = "Atualiza um usuário")
-    public ResponseEntity<UserResponseDTO> update(
+    public ResponseEntity<?> update(
             @PathVariable("id") UUID id,
             @RequestBody UserUpdateDTO userDTO) {
-        UserResponseDTO updated = userService.update(id, userDTO);
-
-        return ResponseEntity.ok().body(updated);
+        try {
+            UserResponseDTO updated = userService.update(id, userDTO);
+            return ResponseEntity.ok().body(updated);
+        } catch (ResponseStatusException e) {
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(Map.of("message", e.getReason())); // retorna JSON com msg clara
+            }
+            throw e; // outras exceções deixam o Spring tratar
+        }
     }
 
     @DeleteMapping(value = "/{id}")
