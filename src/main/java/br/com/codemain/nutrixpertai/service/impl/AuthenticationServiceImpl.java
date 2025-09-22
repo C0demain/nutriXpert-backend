@@ -1,18 +1,21 @@
-package br.com.codemain.nutrixpertai.service;
+package br.com.codemain.nutrixpertai.service.impl;
 
-import br.com.codemain.nutrixpertai.dto.LoginResponseDTO;
-import br.com.codemain.nutrixpertai.dto.RegisterDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.LoginResponseDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.RegisterDTO;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.infra.security.TokenService;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
+import br.com.codemain.nutrixpertai.service.IAuthenticationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
@@ -24,11 +27,19 @@ public class AuthenticationService {
     private TokenService tokenService;
 
     public LoginResponseDTO login(String email, String password) {
-        var authToken = new UsernamePasswordAuthenticationToken(email, password);
-        var auth = authenticationManager.authenticate(authToken);
-        var user = (User) auth.getPrincipal();
-        var token = tokenService.generateToken(user);
-        return new LoginResponseDTO(user.getId().toString(), token);
+        try {
+            if (userRepository.findByEmail(email) == null) {
+                throw new IllegalArgumentException("E-mail informado não encontrado");
+            }
+
+            var authToken = new UsernamePasswordAuthenticationToken(email, password);
+            var auth = authenticationManager.authenticate(authToken);
+            var user = (User) auth.getPrincipal();
+            var token = tokenService.generateToken(user);
+            return new LoginResponseDTO(user.getId().toString(), token);
+        } catch (BadCredentialsException e) {
+            throw new IllegalArgumentException("E-mail ou senha inválidos");
+        }
     }
 
     public void register(RegisterDTO body) {
@@ -41,8 +52,7 @@ public class AuthenticationService {
                 body.name(),
                 body.email(),
                 hashedPassword,
-                body.role()
-        );
+                body.role());
 
         userRepository.save(newUser);
     }

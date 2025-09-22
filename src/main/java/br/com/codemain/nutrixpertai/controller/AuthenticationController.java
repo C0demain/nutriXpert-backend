@@ -1,9 +1,8 @@
 package br.com.codemain.nutrixpertai.controller;
 
-import br.com.codemain.nutrixpertai.dto.AuthenticationDTO;
-import br.com.codemain.nutrixpertai.dto.LoginResponseDTO;
-import br.com.codemain.nutrixpertai.dto.RegisterDTO;
-import br.com.codemain.nutrixpertai.service.AuthenticationService;
+import br.com.codemain.nutrixpertai.dto.Auth.AuthenticationDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.RegisterDTO;
+import br.com.codemain.nutrixpertai.service.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,13 +20,19 @@ import java.util.Map;
 public class AuthenticationController {
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private IAuthenticationService authenticationService;
 
     @PostMapping("/login")
     @Operation(summary = "Login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO body) {
-        var loginResponse = authenticationService.login(body.email(), body.password());
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO body) {
+        try {
+            var loginResponse = authenticationService.login(body.email(), body.password());
+            return ResponseEntity.ok(loginResponse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 
     @PostMapping("/register")
