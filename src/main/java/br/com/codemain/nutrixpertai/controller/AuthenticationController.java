@@ -1,8 +1,8 @@
 package br.com.codemain.nutrixpertai.controller;
 
-import br.com.codemain.nutrixpertai.dto.AuthenticationDTO;
-import br.com.codemain.nutrixpertai.dto.LoginResponseDTO;
-import br.com.codemain.nutrixpertai.dto.RegisterDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.AuthenticationDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.LoginResponseDTO;
+import br.com.codemain.nutrixpertai.dto.Auth.RegisterDTO;
 import br.com.codemain.nutrixpertai.service.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

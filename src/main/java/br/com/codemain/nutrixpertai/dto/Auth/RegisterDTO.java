@@ -1,4 +1,4 @@
-package br.com.codemain.nutrixpertai.dto;
+package br.com.codemain.nutrixpertai.dto.Auth;
 
 import br.com.codemain.nutrixpertai.enums.Role;
 

@@ -18,14 +18,16 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
-    public String generateToken(User user){
-        try{
+    public String generateToken(User user) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             // Retorna o token
             return JWT.create()
                     .withIssuer("nutrixpert-api")
                     .withSubject(user.getEmail())
+                    .withClaim("id", user.getId().toString())
+                    .withClaim("role", user.getRole().name())
                     .withExpiresAt(generateExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException e) {
@@ -33,10 +35,10 @@ public class TokenService {
         }
     }
 
-    public String validateToken(String token){
-        try{
+    public String validateToken(String token) {
+        try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            
+
             return JWT.require(algorithm)
                     .withIssuer("nutrixpert-api")
                     .build()
@@ -47,7 +49,7 @@ public class TokenService {
         }
     }
 
-    private Instant generateExpirationDate(){
+    private Instant generateExpirationDate() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 }

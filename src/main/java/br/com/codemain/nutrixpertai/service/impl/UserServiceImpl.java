@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.com.codemain.nutrixpertai.dto.User.UserAnamneseDTO;
-import br.com.codemain.nutrixpertai.dto.User.UserCreateDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.entity.User;
@@ -25,27 +24,6 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Override
-    public UserResponseDTO create(UserCreateDTO userDTO) {
-        User user = new User();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setRole(userDTO.getRole());
-
-        // gerar o hash antes de salvar depois
-        user.setPassword(userDTO.getPassword());
-
-        // Checa unicidade do e-mail se mudou
-        if (!user.getEmail().equalsIgnoreCase(userDTO.getEmail())
-                && userRepository.existsByEmailAndIdNot(userDTO.getEmail(), user.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já em uso por outro usuário.");
-        }
-
-        userRepository.save(user);
-
-        return toDTO(user);
-    }
 
     @Override
     public UserResponseDTO updateAnamnese(UUID id, UserAnamneseDTO userAnamneseDTO) {
