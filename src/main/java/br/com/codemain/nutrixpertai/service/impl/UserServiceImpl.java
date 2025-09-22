@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -62,7 +63,9 @@ public class UserServiceImpl implements IUserService {
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
         user.setRole(userDTO.getRole());
-        user.setPassword(userDTO.getPassword());
+
+        String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+        user.setPassword(hashedPassword);
 
         userRepository.save(user);
 
