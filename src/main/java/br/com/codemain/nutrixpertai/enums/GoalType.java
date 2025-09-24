@@ -4,7 +4,8 @@ public enum GoalType {
     WEIGHT_LOSS("Perda de peso"),
     WEIGHT_GAIN("Ganho de peso"),
     MUSCLE_GAIN("Ganho de massa"),
-    FAT_LOSS("Perda de gordura");
+    FAT_LOSS("Perda de gordura"),
+    MAINTENANCE("Manutenção do peso");
 
     private final String displayName;
 

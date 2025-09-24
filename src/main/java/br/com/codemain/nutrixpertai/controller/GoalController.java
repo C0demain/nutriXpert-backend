@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -119,5 +118,35 @@ public class GoalController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/formatted/{goalId}")
+    @Operation(
+            summary = "Buscar objetivo formatado",
+            description = "Retorna as informações do objetivo nutricional formatadas em uma string legível para envio ao agente de IA"
+    )
+    public ResponseEntity<String> getGoalFormatted(
+            @Parameter(description = "ID único do objetivo", required = true, example = "1")
+            @PathVariable Long goalId
+    ) {
+        try {
+            String formattedGoal = goalService.getGoalFormatted(goalId);
+            return ResponseEntity.ok(formattedGoal);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/formatted/user/{userId}")
+    @Operation(
+            summary = "Buscar todos objetivos do usuário formatados",
+            description = "Retorna todos os objetivos nutricionais do usuário formatados em uma string para envio ao agente de IA"
+    )
+    public ResponseEntity<String> getUserGoalsFormatted(
+            @Parameter(description = "ID único do usuário", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID userId
+    ) {
+        String formattedGoals = goalService.getUserGoalsFormatted(userId);
+        return ResponseEntity.ok(formattedGoals);
     }
 }
