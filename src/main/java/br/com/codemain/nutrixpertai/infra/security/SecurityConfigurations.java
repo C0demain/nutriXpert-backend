@@ -1,10 +1,12 @@
 package br.com.codemain.nutrixpertai.infra.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfigurations {
+
+    @Value("${token.local}")
+    private String localToken;
 
     @Autowired
     SecurityFilter securityFilter;
@@ -37,6 +42,13 @@ public class SecurityConfigurations {
                         .requestMatchers("/v3/api-docs*/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers("/user/**").access((authentication, context) -> {
+                            String token = context.getRequest().getHeader("LOCAL-TOKEN");
+                            if (localToken.equals(token)) {
+                                return new AuthorizationDecision(true);
+                            }
+                            return new AuthorizationDecision(false);
+                        })
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntryPoint))
