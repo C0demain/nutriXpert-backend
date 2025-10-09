@@ -1,5 +1,8 @@
 package br.com.codemain.nutrixpertai.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum GoalType {
     WEIGHT_LOSS("Emagrecimento"),
     MUSCLE_GAIN("Ganho de massa muscular"),
@@ -16,8 +19,19 @@ public enum GoalType {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static GoalType fromDisplayName(String displayName) {
+        for (GoalType type : GoalType.values()) {
+            if (type.displayName.equalsIgnoreCase(displayName)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Valor inválido para GoalType: " + displayName);
     }
 
     @Override
