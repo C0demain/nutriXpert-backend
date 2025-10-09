@@ -161,6 +161,9 @@ public class GoalServiceImpl {
     private String formatGoalType(GoalType goalType) {
         return switch (goalType) {
             case WEIGHT_LOSS -> "Perda de Peso";
+            case DIABETES_CONTROL -> "Controle de diabetes";
+            case NUTRITIONAL_REEDUCATION -> "Reeducação alimentar";
+            case PHYSICAL_MENTAL_PERFORMANCE -> "Performance física e mental";
             case WEIGHT_GAIN -> "Ganho de Peso";
             case MUSCLE_GAIN -> "Ganho de Massa Muscular";
             case FAT_LOSS -> "Perda de gordura";

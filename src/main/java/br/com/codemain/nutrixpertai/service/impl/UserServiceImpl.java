@@ -38,14 +38,6 @@ public class UserServiceImpl implements IUserService {
             user.setWeight(userAnamneseDTO.getWeight());
         }
 
-        if (userAnamneseDTO.getHabits() != null) {
-            user.setHabits(userAnamneseDTO.getHabits());
-        }
-
-        if (userAnamneseDTO.getIllnesses() != null) {
-            user.setIllnesses(userAnamneseDTO.getIllnesses());
-        }
-
         userRepository.save(user);
 
         return toDTO(user);
@@ -111,8 +103,6 @@ public class UserServiceImpl implements IUserService {
         dto.setRole(user.getRole());
         dto.setHeight(user.getHeight());
         dto.setWeight(user.getWeight());
-        dto.setHabits(user.getHabits());
-        dto.setIllnesses(user.getIllnesses());
 
         return dto;
     }
