@@ -86,28 +86,7 @@ public class AnamneseService {
 
     private Anamnese toEntity(AnamneseRequestDTO dto) {
         Anamnese entity = new Anamnese();
-
-        entity.setGoalType(dto.goalType());
-        entity.setGoalTypeOther(dto.goalTypeOther());
-        entity.setHealthConditionType(dto.healthConditionType());
-        entity.setHealthConditionOther(dto.healthConditionOther());
-        entity.setAllergyIntoleranceType(dto.allergyIntoleranceType());
-        entity.setAllergyIntoleranceOther(dto.allergyIntoleranceOther());
-        entity.setSurgeryType(dto.surgeryType());
-        entity.setSurgeryTypeOther(dto.surgeryTypeOther());
-        entity.setPhysicalActivityType(dto.physicalActivityType());
-        entity.setPhysicalActivityOther(dto.physicalActivityOther());
-        entity.setPhysicalActivityFrequency(dto.physicalActivityFrequency());
-        entity.setPhysicalActivityDuration(dto.physicalActivityDuration());
-        entity.setSleepQuality(dto.sleepQuality());
-        entity.setNightAwakeningFrequency(dto.nightAwakeningFrequency());
-        entity.setEvacuationFrequencyType(dto.evacuationFrequencyType());
-        entity.setStressLevel(dto.stressLevel());
-        entity.setAlcoholConsumption(dto.alcoholConsumption());
-        entity.setTabagism(dto.tabagism());
-        entity.setHydration(dto.hydration());
-        entity.setContinuousMedication(dto.continuousMedication());
-
+        mapDtoToEntity(entity, dto);
         return entity;
     }
 
@@ -138,26 +117,7 @@ public class AnamneseService {
     }
 
     private void updateEntityFromDto(Anamnese entity, AnamneseRequestDTO dto) {
-        entity.setGoalType(dto.goalType());
-        entity.setGoalTypeOther(dto.goalTypeOther());
-        entity.setHealthConditionType(dto.healthConditionType());
-        entity.setHealthConditionOther(dto.healthConditionOther());
-        entity.setAllergyIntoleranceType(dto.allergyIntoleranceType());
-        entity.setAllergyIntoleranceOther(dto.allergyIntoleranceOther());
-        entity.setSurgeryType(dto.surgeryType());
-        entity.setSurgeryTypeOther(dto.surgeryTypeOther());
-        entity.setPhysicalActivityType(dto.physicalActivityType());
-        entity.setPhysicalActivityOther(dto.physicalActivityOther());
-        entity.setPhysicalActivityFrequency(dto.physicalActivityFrequency());
-        entity.setPhysicalActivityDuration(dto.physicalActivityDuration());
-        entity.setSleepQuality(dto.sleepQuality());
-        entity.setNightAwakeningFrequency(dto.nightAwakeningFrequency());
-        entity.setEvacuationFrequencyType(dto.evacuationFrequencyType());
-        entity.setStressLevel(dto.stressLevel());
-        entity.setAlcoholConsumption(dto.alcoholConsumption());
-        entity.setTabagism(dto.tabagism());
-        entity.setHydration(dto.hydration());
-        entity.setContinuousMedication(dto.continuousMedication());
+        mapDtoToEntity(entity, dto);
     }
 
     private void applyPatchToEntity(Anamnese entity, AnamneseRequestDTO patchRequest) {
@@ -221,6 +181,29 @@ public class AnamneseService {
         if (patchRequest.continuousMedication() != null) {
             entity.setContinuousMedication(patchRequest.continuousMedication());
         }
+    }
+
+    private void mapDtoToEntity(Anamnese entity, AnamneseRequestDTO dto) {
+        entity.setGoalType(dto.goalType());
+        entity.setGoalTypeOther(dto.goalTypeOther());
+        entity.setHealthConditionType(dto.healthConditionType());
+        entity.setHealthConditionOther(dto.healthConditionOther());
+        entity.setAllergyIntoleranceType(dto.allergyIntoleranceType());
+        entity.setAllergyIntoleranceOther(dto.allergyIntoleranceOther());
+        entity.setSurgeryType(dto.surgeryType());
+        entity.setSurgeryTypeOther(dto.surgeryTypeOther());
+        entity.setPhysicalActivityType(dto.physicalActivityType());
+        entity.setPhysicalActivityOther(dto.physicalActivityOther());
+        entity.setPhysicalActivityFrequency(dto.physicalActivityFrequency());
+        entity.setPhysicalActivityDuration(dto.physicalActivityDuration());
+        entity.setSleepQuality(dto.sleepQuality());
+        entity.setNightAwakeningFrequency(dto.nightAwakeningFrequency());
+        entity.setEvacuationFrequencyType(dto.evacuationFrequencyType());
+        entity.setStressLevel(dto.stressLevel());
+        entity.setAlcoholConsumption(dto.alcoholConsumption());
+        entity.setTabagism(dto.tabagism());
+        entity.setHydration(dto.hydration());
+        entity.setContinuousMedication(dto.continuousMedication());
     }
 
 }
