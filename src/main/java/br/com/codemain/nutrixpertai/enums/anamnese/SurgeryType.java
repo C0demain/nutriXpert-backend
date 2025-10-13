@@ -1,5 +1,8 @@
 package br.com.codemain.nutrixpertai.enums.anamnese;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum SurgeryType {
     NONE("não"),
     BARIATRIC("Bariátrica"),
@@ -15,8 +18,19 @@ public enum SurgeryType {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static SurgeryType fromDisplayName(String displayName) {
+        for (SurgeryType type : SurgeryType.values()) {
+            if (type.displayName.equalsIgnoreCase(displayName)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Valor inválido para SurgeryType: " + displayName);
     }
 
     @Override

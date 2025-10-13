@@ -1,5 +1,8 @@
 package br.com.codemain.nutrixpertai.enums.anamnese;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum HealthConditionType {
 
     DIABETES_TYPE_1("Diabetes tipo 1"),
@@ -23,8 +26,19 @@ public enum HealthConditionType {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static HealthConditionType fromDisplayName(String displayName) {
+        for (HealthConditionType type : HealthConditionType.values()) {
+            if (type.displayName.equalsIgnoreCase(displayName)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Valor inválido para HealthConditionType: " + displayName);
     }
 
     @Override

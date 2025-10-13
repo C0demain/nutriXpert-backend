@@ -1,5 +1,8 @@
 package br.com.codemain.nutrixpertai.enums.anamnese;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum AllergyIntoleranceType {
     NONE("Não"),
     LACTOSE_INTOLERANCE("Intolerância à lactose"),
@@ -14,8 +17,19 @@ public enum AllergyIntoleranceType {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static AllergyIntoleranceType fromDisplayName(String displayName) {
+        for (AllergyIntoleranceType type : AllergyIntoleranceType.values()) {
+            if (type.displayName.equalsIgnoreCase(displayName)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Valor inválido para AllergyIntoleranceType: " + displayName);
     }
 
     @Override
