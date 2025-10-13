@@ -39,11 +39,10 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private String weight;
 
-    @Column(nullable = true)
-    private String habits;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "anamnese_id", referencedColumnName = "id")
+    private Anamnese anamnese;
 
-    @Column(nullable = true)
-    private String illnesses;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
@@ -59,8 +58,7 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public User(String name, String email, String password, Role role, String height, String weight, String habits,
-                String illnesses) {
+    public User(String name, String email, String password, Role role, String height, String weight) {
         this();
         this.name = name;
         this.email = email;
@@ -68,8 +66,6 @@ public class User implements UserDetails {
         this.role = role;
         this.height = height;
         this.weight = weight;
-        this.habits = habits;
-        this.illnesses = illnesses;
     }
 
 
@@ -159,19 +155,11 @@ public class User implements UserDetails {
         this.weight = weight;
     }
 
-    public String getHabits() {
-        return habits;
+    public Anamnese getAnamnese() {
+        return anamnese;
     }
 
-    public void setHabits(String habits) {
-        this.habits = habits;
-    }
-
-    public String getIllnesses() {
-        return illnesses;
-    }
-
-    public void setIllnesses(String illnesses) {
-        this.illnesses = illnesses;
+    public void setAnamnese(Anamnese anamnese) {
+        this.anamnese = anamnese;
     }
 }

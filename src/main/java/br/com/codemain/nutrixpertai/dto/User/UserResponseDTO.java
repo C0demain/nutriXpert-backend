@@ -2,6 +2,7 @@ package br.com.codemain.nutrixpertai.dto.User;
 
 import java.util.UUID;
 
+import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
 import br.com.codemain.nutrixpertai.enums.Role;
 
 public class UserResponseDTO {
@@ -18,9 +19,7 @@ public class UserResponseDTO {
 
     private String weight;
 
-    private String habits;
-
-    private String illnesses;
+    private AnamneseResponseDTO anamnese;
 
     public UUID getId() {
         return id;
@@ -70,20 +69,12 @@ public class UserResponseDTO {
         this.weight = weight;
     }
 
-    public String getHabits() {
-        return habits;
+    public AnamneseResponseDTO getAnamnese() {
+        return anamnese;
     }
 
-    public void setHabits(String habits) {
-        this.habits = habits;
-    }
-
-    public String getIllnesses() {
-        return illnesses;
-    }
-
-    public void setIllnesses(String illnesses) {
-        this.illnesses = illnesses;
+    public void setAnamnese(AnamneseResponseDTO anamnese) {
+        this.anamnese = anamnese;
     }
 
 
