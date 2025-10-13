@@ -61,6 +61,17 @@ public class AnamneseService {
     }
 
     @Transactional
+    public AnamneseResponseDTO patch(UUID userId, AnamneseRequestDTO patchRequest) {
+        Anamnese existingAnamnese = anamneseRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Anamnese não encontrada para o usuário com ID: " + userId));
+
+        applyPatchToEntity(existingAnamnese, patchRequest);
+
+        Anamnese patchedAnamnese = anamneseRepository.save(existingAnamnese);
+        return toResponseDTO(patchedAnamnese);
+    }
+
+    @Transactional
     public void delete(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + userId));
@@ -148,4 +159,68 @@ public class AnamneseService {
         entity.setHydration(dto.hydration());
         entity.setContinuousMedication(dto.continuousMedication());
     }
+
+    private void applyPatchToEntity(Anamnese entity, AnamneseRequestDTO patchRequest) {
+        if (patchRequest.goalType() != null) {
+            entity.setGoalType(patchRequest.goalType());
+        }
+        if (patchRequest.goalTypeOther() != null) {
+            entity.setGoalTypeOther(patchRequest.goalTypeOther());
+        }
+        if (patchRequest.healthConditionType() != null) {
+            entity.setHealthConditionType(patchRequest.healthConditionType());
+        }
+        if (patchRequest.healthConditionOther() != null) {
+            entity.setHealthConditionOther(patchRequest.healthConditionOther());
+        }
+        if (patchRequest.allergyIntoleranceType() != null) {
+            entity.setAllergyIntoleranceType(patchRequest.allergyIntoleranceType());
+        }
+        if (patchRequest.allergyIntoleranceOther() != null) {
+            entity.setAllergyIntoleranceOther(patchRequest.allergyIntoleranceOther());
+        }
+        if (patchRequest.surgeryType() != null) {
+            entity.setSurgeryType(patchRequest.surgeryType());
+        }
+        if (patchRequest.surgeryTypeOther() != null) {
+            entity.setSurgeryTypeOther(patchRequest.surgeryTypeOther());
+        }
+        if (patchRequest.physicalActivityType() != null) {
+            entity.setPhysicalActivityType(patchRequest.physicalActivityType());
+        }
+        if (patchRequest.physicalActivityOther() != null) {
+            entity.setPhysicalActivityOther(patchRequest.physicalActivityOther());
+        }
+        if (patchRequest.physicalActivityFrequency() != null) {
+            entity.setPhysicalActivityFrequency(patchRequest.physicalActivityFrequency());
+        }
+        if (patchRequest.physicalActivityDuration() != null) {
+            entity.setPhysicalActivityDuration(patchRequest.physicalActivityDuration());
+        }
+        if (patchRequest.sleepQuality() != null) {
+            entity.setSleepQuality(patchRequest.sleepQuality());
+        }
+        if (patchRequest.nightAwakeningFrequency() != null) {
+            entity.setNightAwakeningFrequency(patchRequest.nightAwakeningFrequency());
+        }
+        if (patchRequest.evacuationFrequencyType() != null) {
+            entity.setEvacuationFrequencyType(patchRequest.evacuationFrequencyType());
+        }
+        if (patchRequest.stressLevel() != null) {
+            entity.setStressLevel(patchRequest.stressLevel());
+        }
+        if (patchRequest.alcoholConsumption() != null) {
+            entity.setAlcoholConsumption(patchRequest.alcoholConsumption());
+        }
+        if (patchRequest.tabagism() != null) {
+            entity.setTabagism(patchRequest.tabagism());
+        }
+        if (patchRequest.hydration() != null) {
+            entity.setHydration(patchRequest.hydration());
+        }
+        if (patchRequest.continuousMedication() != null) {
+            entity.setContinuousMedication(patchRequest.continuousMedication());
+        }
+    }
+
 }

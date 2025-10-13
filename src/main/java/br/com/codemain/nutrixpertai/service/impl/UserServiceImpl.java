@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
+import br.com.codemain.nutrixpertai.entity.Anamnese;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -103,8 +105,40 @@ public class UserServiceImpl implements IUserService {
         dto.setRole(user.getRole());
         dto.setHeight(user.getHeight());
         dto.setWeight(user.getWeight());
+        AnamneseResponseDTO anamneseDTO = toAnamneseDTO(user.getAnamnese());
+        dto.setAnamnese(anamneseDTO);
 
         return dto;
+    }
+
+    private AnamneseResponseDTO toAnamneseDTO(Anamnese entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new AnamneseResponseDTO(
+                entity.getId(),
+                entity.getGoalType(),
+                entity.getGoalTypeOther(),
+                entity.getHealthConditionType(),
+                entity.getHealthConditionOther(),
+                entity.getAllergyIntoleranceType(),
+                entity.getAllergyIntoleranceOther(),
+                entity.getSurgeryType(),
+                entity.getSurgeryTypeOther(),
+                entity.getPhysicalActivityType(),
+                entity.getPhysicalActivityOther(),
+                entity.getPhysicalActivityFrequency(),
+                entity.getPhysicalActivityDuration(),
+                entity.getSleepQuality(),
+                entity.getNightAwakeningFrequency(),
+                entity.getEvacuationFrequencyType(),
+                entity.getStressLevel(),
+                entity.getAlcoholConsumption(),
+                entity.getTabagism(),
+                entity.getHydration(),
+                entity.getContinuousMedication()
+        );
     }
 
     @Override

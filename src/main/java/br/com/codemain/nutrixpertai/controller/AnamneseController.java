@@ -78,6 +78,21 @@ public class AnamneseController {
         return ResponseEntity.ok(responseDTO);
     }
 
+    @Operation(summary = "Atualiza parcialmente a anamnese de um usuário",
+            description = "Atualiza um ou mais campos da anamnese existente. Apenas os campos fornecidos no corpo da requisição serão alterados.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Anamnese atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+            @ApiResponse(responseCode = "404", description = "Nenhuma anamnese encontrada para o usuário com o ID fornecido")
+    })
+    @PatchMapping
+    public ResponseEntity<AnamneseResponseDTO> patch(
+            @Parameter(description = "ID do usuário cuja anamnese será atualizada", required = true) @PathVariable UUID userId,
+            @RequestBody AnamneseRequestDTO patchRequest) {
+        AnamneseResponseDTO responseDTO = anamneseService.patch(userId, patchRequest);
+        return ResponseEntity.ok(responseDTO);
+    }
+
     @Operation(summary = "Deleta a anamnese de um usuário",
             description = "Remove o registro da anamnese associada ao usuário especificado.")
     @ApiResponses(value = {
