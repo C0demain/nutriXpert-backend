@@ -1,5 +1,6 @@
 package br.com.codemain.nutrixpertai.infra.exception;
 
+import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -59,6 +60,31 @@ public class GlobalExceptionHandler {
                         "status", HttpStatus.BAD_REQUEST.value(),
                         "error", "Bad Request",
                         "message", message
+                ));
+    }
+
+    @ExceptionHandler(AgentServiceException.class)
+    public ResponseEntity<?> handleAgentServiceException(AgentServiceException ex) {
+
+        // Verifica se a causa foi um erro 404 do serviço externo
+        if (ex.getCause() instanceof FeignException.NotFound) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND) // 404
+                    .body(Map.of(
+                            "status", HttpStatus.NOT_FOUND.value(),
+                            "error", "Not Found",
+                            "message", ex.getMessage()
+                    ));
+        }
+
+        // Para todas as outras falhas do agente (offline, timeout, erro 500)
+        // retornamos 503 (Serviço Indisponível)
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE) // 503
+                .body(Map.of(
+                        "status", HttpStatus.SERVICE_UNAVAILABLE.value(),
+                        "error", "Service Unavailable",
+                        "message", ex.getMessage()
                 ));
     }
 }
