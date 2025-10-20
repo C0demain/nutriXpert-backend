@@ -5,11 +5,14 @@ import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.session.SessionInfoResponseDto;
+import br.com.codemain.nutrixpertai.client.dto.session.SessionListItemDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @FeignClient(name = "agentClient",
         url = "${clients.agent.url}"
@@ -27,5 +30,8 @@ public interface AgentClient {
             @PathVariable("user_id") String userId,
             @PathVariable("session_id") String sessionId
     );
+
+    @GetMapping("/{user_id}/list")
+    List<SessionListItemDto> listUserSessions(@PathVariable("user_id") String userId);
 
 }

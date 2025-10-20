@@ -5,9 +5,11 @@ import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.session.SessionInfoResponseDto;
+import br.com.codemain.nutrixpertai.client.dto.session.SessionListItemDto;
 import br.com.codemain.nutrixpertai.service.impl.AgentServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Agente IA", description = "Endpoints para interagir com o agente de IA")
 @RestController
@@ -121,6 +125,34 @@ public class AgentController {
             @PathVariable String sessionId
     ) {
         SessionInfoResponseDto response = agentService.getSessionMessages(userId, sessionId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Listar sessões do usuário",
+            description = "Retorna uma lista de todas as sessões de um usuário específico, com a primeira mensagem."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de sessões retornada com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SessionListItemDto.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content
+            )
+    })
+    @GetMapping("/{userId}/list")
+    public ResponseEntity<List<SessionListItemDto>> listUserSessions(
+            @Parameter(description = "ID do usuário", required = true, example = "1")
+            @PathVariable String userId
+    ) {
+        List<SessionListItemDto> response = agentService.listUserSessions(userId);
         return ResponseEntity.ok(response);
     }
 }
