@@ -4,8 +4,10 @@ import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentResponseDto;
+import br.com.codemain.nutrixpertai.client.dto.session.SessionInfoResponseDto;
 import br.com.codemain.nutrixpertai.service.impl.AgentServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -88,6 +90,37 @@ public class AgentController {
     @PostMapping("/feedback")
     public ResponseEntity<FeedbackResponseDto> feedback(@RequestBody @Valid FeedbackRequestDto feedbackRequestDto) {
         FeedbackResponseDto response = agentService.executeFeedback(feedbackRequestDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Buscar mensagens da sessão",
+            description = "Retorna todos os detalhes e o histórico de mensagens de uma sessão específica do usuário."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Sessão encontrada e mensagens retornadas",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SessionInfoResponseDto.class) // O DTO de resposta
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Sessão ou usuário não encontrado",
+                    content = @Content
+            )
+    })
+    @GetMapping("/sessions/{userId}/{sessionId}")
+    public ResponseEntity<SessionInfoResponseDto> getSessionMessages(
+            @Parameter(description = "ID do usuário", required = true, example = "1")
+            @PathVariable String userId,
+
+            @Parameter(description = "ID da sessão", required = true, example = "1")
+            @PathVariable String sessionId
+    ) {
+        SessionInfoResponseDto response = agentService.getSessionMessages(userId, sessionId);
         return ResponseEntity.ok(response);
     }
 }

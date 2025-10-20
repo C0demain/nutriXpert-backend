@@ -5,6 +5,7 @@ import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.feedback.FeedbackResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentResponseDto;
+import br.com.codemain.nutrixpertai.client.dto.session.SessionInfoResponseDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,5 +24,9 @@ public class AgentServiceImpl {
 
     public FeedbackResponseDto executeFeedback(FeedbackRequestDto requestDto) {
         return agentClient.createFeedback(requestDto);
+    }
+
+    public SessionInfoResponseDto getSessionMessages(String userId, String sessionId) {
+        return agentClient.getSessionMessages(userId, sessionId);
     }
 }
