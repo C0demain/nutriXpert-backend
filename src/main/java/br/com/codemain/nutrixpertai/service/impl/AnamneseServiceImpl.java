@@ -6,6 +6,7 @@ import br.com.codemain.nutrixpertai.entity.Anamnese;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.repository.AnamneseRepository;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
+import br.com.codemain.nutrixpertai.service.IAnamneseService;
 import br.com.codemain.nutrixpertai.service.mapper.AnamneseMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -14,20 +15,20 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class AnamneseService {
-
+public class AnamneseServiceImpl implements IAnamneseService {
 
     private final UserRepository userRepository;
     private final AnamneseRepository anamneseRepository;
     private final AnamneseMapper anamneseMapper;
 
 
-    public AnamneseService(UserRepository userRepository, AnamneseRepository anamneseRepository, AnamneseMapper anamneseMapper) {
+    public AnamneseServiceImpl(UserRepository userRepository, AnamneseRepository anamneseRepository, AnamneseMapper anamneseMapper) {
         this.userRepository = userRepository;
         this.anamneseRepository = anamneseRepository;
         this.anamneseMapper = anamneseMapper;
     }
 
+    @Override
     @Transactional
     public AnamneseResponseDTO create(UUID userId, AnamneseRequestDTO dto) {
         User user = userRepository.findById(userId)
@@ -45,6 +46,7 @@ public class AnamneseService {
         return toResponseDTO(savedAnamnese);
     }
 
+    @Override
     @Transactional()
     public AnamneseResponseDTO getByUserId(UUID userId) {
         return anamneseRepository.findByUser_Id(userId)
@@ -53,6 +55,7 @@ public class AnamneseService {
     }
 
 
+    @Override
     @Transactional
     public AnamneseResponseDTO update(UUID userId, AnamneseRequestDTO dto) {
         Anamnese existingAnamnese = anamneseRepository.findByUser_Id(userId)
@@ -64,6 +67,7 @@ public class AnamneseService {
         return toResponseDTO(updatedAnamnese);
     }
 
+    @Override
     @Transactional
     public AnamneseResponseDTO patch(UUID userId, AnamneseRequestDTO patchRequest) {
         Anamnese existingAnamnese = anamneseRepository.findByUser_Id(userId)
@@ -75,6 +79,7 @@ public class AnamneseService {
         return toResponseDTO(patchedAnamnese);
     }
 
+    @Override
     @Transactional
     public void delete(UUID userId) {
         User user = userRepository.findById(userId)
