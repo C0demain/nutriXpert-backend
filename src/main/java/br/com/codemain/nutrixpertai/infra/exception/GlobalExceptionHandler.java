@@ -1,5 +1,6 @@
 package br.com.codemain.nutrixpertai.infra.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +85,17 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "status", HttpStatus.SERVICE_UNAVAILABLE.value(),
                         "error", "Service Unavailable",
+                        "message", ex.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFound(EntityNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of(
+                        "status", HttpStatus.NOT_FOUND.value(),
+                        "error", "Not Found",
                         "message", ex.getMessage()
                 ));
     }
