@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
 import br.com.codemain.nutrixpertai.entity.Anamnese;
+import br.com.codemain.nutrixpertai.service.mapper.AnamneseMapper;
+import br.com.codemain.nutrixpertai.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.codemain.nutrixpertai.dto.User.UserAnamneseDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserPhysicalDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.entity.User;
@@ -26,22 +28,24 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AnamneseMapper anamneseMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
-    public UserResponseDTO updateAnamnese(UUID id, UserAnamneseDTO userAnamneseDTO) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+    public UserResponseDTO updatePhysical(UUID id, UserPhysicalDTO userPhysicalDTO) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (userAnamneseDTO.getHeight() != null) {
-            user.setHeight(userAnamneseDTO.getHeight());
+        if(userPhysicalDTO.weight() != null){
+            user.setWeight(userPhysicalDTO.weight());
         }
-
-        if (userAnamneseDTO.getWeight() != null) {
-            user.setWeight(userAnamneseDTO.getWeight());
+        if(userPhysicalDTO.height() != null){
+            user.setHeight(userPhysicalDTO.height());
         }
 
         userRepository.save(user);
-
         return toDTO(user);
     }
 
@@ -59,27 +63,27 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não existe!"));
 
         // Checa unicidade do e-mail se mudou
-        if (userDTO.getEmail() != null) {
+        if (userDTO.email() != null) {
             // Checa unicidade do e-mail se mudou
-            if (!user.getEmail().equalsIgnoreCase(userDTO.getEmail())
-                    && userRepository.existsByEmailAndIdNot(userDTO.getEmail(), id)) {
+            if (!user.getEmail().equalsIgnoreCase(userDTO.email())
+                    && userRepository.existsByEmailAndIdNot(userDTO.email(), id)) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já em uso por outro usuário.");
             }
-            user.setEmail(userDTO.getEmail());
+            user.setEmail(userDTO.email());
         }
 
         // Atualiza só os campos enviados
-        if (userDTO.getName() != null) {
-            user.setName(userDTO.getName());
+        if (userDTO.name() != null) {
+            user.setName(userDTO.name());
         }
-        if (userDTO.getEmail() != null) {
-            user.setEmail(userDTO.getEmail());
+        if (userDTO.email() != null) {
+            user.setEmail(userDTO.email());
         }
-        if (userDTO.getRole() != null) {
-            user.setRole(userDTO.getRole());
+        if (userDTO.role() != null) {
+            user.setRole(userDTO.role());
         }
-        if (userDTO.getPassword() != null) {
-            String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+        if (userDTO.password() != null) {
+            String hashedPassword = new BCryptPasswordEncoder().encode(userDTO.password());
             user.setPassword(hashedPassword);
         }
 
@@ -98,17 +102,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     private UserResponseDTO toDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
-        dto.setHeight(user.getHeight());
-        dto.setWeight(user.getWeight());
-        AnamneseResponseDTO anamneseDTO = toAnamneseDTO(user.getAnamnese());
-        dto.setAnamnese(anamneseDTO);
 
-        return dto;
+        return  userMapper.toDTO(user);
     }
 
     private AnamneseResponseDTO toAnamneseDTO(Anamnese entity) {
@@ -116,29 +111,7 @@ public class UserServiceImpl implements IUserService {
             return null;
         }
 
-        return new AnamneseResponseDTO(
-                entity.getId(),
-                entity.getGoalType(),
-                entity.getGoalTypeOther(),
-                entity.getHealthConditionType(),
-                entity.getHealthConditionOther(),
-                entity.getAllergyIntoleranceType(),
-                entity.getAllergyIntoleranceOther(),
-                entity.getSurgeryType(),
-                entity.getSurgeryTypeOther(),
-                entity.getPhysicalActivityType(),
-                entity.getPhysicalActivityOther(),
-                entity.getPhysicalActivityFrequency(),
-                entity.getPhysicalActivityDuration(),
-                entity.getSleepQuality(),
-                entity.getNightAwakeningFrequency(),
-                entity.getEvacuationFrequencyType(),
-                entity.getStressLevel(),
-                entity.getAlcoholConsumption(),
-                entity.getTabagism(),
-                entity.getHydration(),
-                entity.getContinuousMedication()
-        );
+        return anamneseMapper.toResponseDTO(entity);
     }
 
     @Override
@@ -156,4 +129,5 @@ public class UserServiceImpl implements IUserService {
         // Username = E-mail do usuário
         return userRepository.findByEmail(username);
     }
+
 }

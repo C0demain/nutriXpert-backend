@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.codemain.nutrixpertai.dto.User.UserAnamneseDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserPhysicalDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.service.IUserService;
@@ -32,12 +32,12 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PatchMapping(value = "anamnese/{id}")
-    @Operation(summary = "Atualiza anamnese usuário")
+    @PatchMapping(value = "physical/{id}")
+    @Operation(summary = "Atualiza peso e altura do usuário")
     public ResponseEntity<UserResponseDTO> updateAnamnese(
             @PathVariable("id") UUID id,
-            @RequestBody UserAnamneseDTO userAnamneseDTO) {
-        UserResponseDTO updated = userService.updateAnamnese(id, userAnamneseDTO);
+            @RequestBody UserPhysicalDTO userPhysicalDTO) {
+        UserResponseDTO updated = userService.updatePhysical(id, userPhysicalDTO);
 
         return ResponseEntity.ok().body(updated);
     }

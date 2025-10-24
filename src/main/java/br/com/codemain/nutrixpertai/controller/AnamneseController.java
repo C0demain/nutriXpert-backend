@@ -2,7 +2,8 @@ package br.com.codemain.nutrixpertai.controller;
 
 import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseRequestDTO;
 import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
-import br.com.codemain.nutrixpertai.service.impl.AnamneseService;
+import br.com.codemain.nutrixpertai.service.IAnamneseService;
+import br.com.codemain.nutrixpertai.service.impl.AnamneseServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,10 +24,10 @@ import java.util.UUID;
 @SecurityRequirement(name = "Bearer Authentication")
 public class AnamneseController {
 
-    private final AnamneseService anamneseService;
+    private final IAnamneseService anamneseServiceImpl;
 
-    public AnamneseController(AnamneseService anamneseService) {
-        this.anamneseService = anamneseService;
+    public AnamneseController(AnamneseServiceImpl anamneseServiceImpl) {
+        this.anamneseServiceImpl = anamneseServiceImpl;
     }
 
 
@@ -42,7 +43,7 @@ public class AnamneseController {
             @Parameter(description = "ID do usuário para associar a anamnese", required = true)
             @PathVariable UUID userId,
             @RequestBody AnamneseRequestDTO requestDTO) {
-        AnamneseResponseDTO responseDTO = anamneseService.create(userId, requestDTO);
+        AnamneseResponseDTO responseDTO = anamneseServiceImpl.create(userId, requestDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
         return ResponseEntity.created(location).body(responseDTO);
     }
@@ -58,7 +59,7 @@ public class AnamneseController {
     public ResponseEntity<AnamneseResponseDTO> getByUserId(
             @Parameter(description = "ID do usuário cuja anamnese será buscada", required = true)
             @PathVariable UUID userId) {
-        AnamneseResponseDTO responseDTO = anamneseService.getByUserId(userId);
+        AnamneseResponseDTO responseDTO = anamneseServiceImpl.getByUserId(userId);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -74,7 +75,7 @@ public class AnamneseController {
             @Parameter(description = "ID do usuário cuja anamnese será atualizada", required = true)
             @PathVariable UUID userId,
             @RequestBody AnamneseRequestDTO requestDTO) {
-        AnamneseResponseDTO responseDTO = anamneseService.update(userId, requestDTO);
+        AnamneseResponseDTO responseDTO = anamneseServiceImpl.update(userId, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -89,7 +90,7 @@ public class AnamneseController {
     public ResponseEntity<AnamneseResponseDTO> patch(
             @Parameter(description = "ID do usuário cuja anamnese será atualizada", required = true) @PathVariable UUID userId,
             @RequestBody AnamneseRequestDTO patchRequest) {
-        AnamneseResponseDTO responseDTO = anamneseService.patch(userId, patchRequest);
+        AnamneseResponseDTO responseDTO = anamneseServiceImpl.patch(userId, patchRequest);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -103,7 +104,7 @@ public class AnamneseController {
     public ResponseEntity<Void> delete(
             @Parameter(description = "ID do usuário cuja anamnese será deletada", required = true)
             @PathVariable UUID userId) {
-        anamneseService.delete(userId);
+        anamneseServiceImpl.delete(userId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -34,10 +34,10 @@ public class User implements UserDetails {
     private Role role;
 
     @Column(nullable = true)
-    private String height;
+    private Integer height;
 
     @Column(nullable = true)
-    private String weight;
+    private Double weight;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "anamnese_id", referencedColumnName = "id")
@@ -58,7 +58,7 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public User(String name, String email, String password, Role role, String height, String weight) {
+    public User(String name, String email, String password, Role role, Integer height, Double weight) {
         this();
         this.name = name;
         this.email = email;
@@ -139,19 +139,19 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public String getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(String height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public String getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(String weight) {
+    public void setWeight(Double weight) {
         this.weight = weight;
     }
 
