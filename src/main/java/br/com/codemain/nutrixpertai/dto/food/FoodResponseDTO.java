@@ -1,10 +1,10 @@
 package br.com.codemain.nutrixpertai.dto.food;
 
-public record FoodDTO(
+public record FoodResponseDTO(
         Long id,
+        Long mealId,
         String foodName,
         Double calories,
-        Long mealId,
         Double protein,
         Double carbohydrates,
         Double fat) {

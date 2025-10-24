@@ -1,6 +1,7 @@
 package br.com.codemain.nutrixpertai.entity;
 
 import br.com.codemain.nutrixpertai.enums.MealType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
