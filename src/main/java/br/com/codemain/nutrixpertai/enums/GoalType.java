@@ -27,7 +27,7 @@ public enum GoalType {
     @JsonCreator
     public static GoalType fromDisplayName(String displayName) {
         for (GoalType type : GoalType.values()) {
-            if (type.name().equalsIgnoreCase(displayName)) {
+            if (type.displayName.equalsIgnoreCase(displayName)) {
                 return type;
             }
         }
