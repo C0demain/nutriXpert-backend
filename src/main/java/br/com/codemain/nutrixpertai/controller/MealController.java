@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/meals")
+@RequestMapping("/api/meals")
 @Tag(name = "Refeições", description = "Endpoints para gerenciamento de refeições")
 @SecurityRequirement(name = "Bearer Authentication")
 public class MealController {

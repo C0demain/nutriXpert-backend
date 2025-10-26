@@ -1,7 +1,6 @@
 
 package br.com.codemain.nutrixpertai.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
