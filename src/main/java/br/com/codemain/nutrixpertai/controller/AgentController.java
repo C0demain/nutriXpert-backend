@@ -60,7 +60,7 @@ public class AgentController {
                     content = @Content
             )
     })
-    @PostMapping("/run")
+    @PostMapping("/run-agent")
     public ResponseEntity<RunAgentResponseDto> runAgent(@RequestBody RunAgentRequestDto requestDto) {
         RunAgentResponseDto response = agentService.executeAgent(requestDto);
         return ResponseEntity.ok(response);

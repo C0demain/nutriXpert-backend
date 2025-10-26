@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RestController
 @CrossOrigin
-@RequestMapping("user/{userId}/anamnese")
+@RequestMapping("/api/user/{userId}/anamnese")
 @Tag(name = "Anamnese", description = "Endpoints para gerenciamento da Anamnese do Usuário")
 @SecurityRequirement(name = "Bearer Authentication")
 public class AnamneseController {

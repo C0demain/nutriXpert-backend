@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/foods")
+@RequestMapping("/api/foods")
 @Tag(name = "Alimentos", description = "Endpoints para gerenciamento de alimentos das refeições")
 @SecurityRequirement(name = "Bearer Authentication")
 public class FoodController {

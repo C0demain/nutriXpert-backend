@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
-import br.com.codemain.nutrixpertai.entity.Anamnese;
-import br.com.codemain.nutrixpertai.service.mapper.AnamneseMapper;
 import br.com.codemain.nutrixpertai.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,8 +25,7 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private AnamneseMapper anamneseMapper;
+
     @Autowired
     private UserMapper userMapper;
 
@@ -104,14 +100,6 @@ public class UserServiceImpl implements IUserService {
     private UserResponseDTO toDTO(User user) {
 
         return  userMapper.toDTO(user);
-    }
-
-    private AnamneseResponseDTO toAnamneseDTO(Anamnese entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        return anamneseMapper.toResponseDTO(entity);
     }
 
     @Override
