@@ -48,6 +48,9 @@ public class User implements UserDetails {
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Meal> meals;
+
     public User() {
     }
 
@@ -161,5 +164,13 @@ public class User implements UserDetails {
 
     public void setAnamnese(Anamnese anamnese) {
         this.anamnese = anamnese;
+    }
+
+    public List<Meal> getMeals() {
+        return meals;
+    }
+
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
     }
 }
