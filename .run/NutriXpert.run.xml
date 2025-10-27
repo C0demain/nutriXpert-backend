@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="NutriXpert" type="Application" factoryName="Application">
+    <option name="envFilePaths">
+      <option value="$PROJECT_DIR$/src/main/resources/.env" />
+    </option>
+    <option name="MAIN_CLASS_NAME" value="br.com.codemain.nutrixpertai.NutrixpertaiApplication" />
+    <module name="nutrixpertai" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

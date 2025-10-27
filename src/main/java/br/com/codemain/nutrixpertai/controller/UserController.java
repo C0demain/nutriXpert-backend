@@ -1,6 +1,5 @@
 package br.com.codemain.nutrixpertai.controller;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,55 +10,58 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.codemain.nutrixpertai.dto.UserCreateDTO;
-import br.com.codemain.nutrixpertai.dto.UserUpdateDTO;
-import br.com.codemain.nutrixpertai.entity.User;
+import br.com.codemain.nutrixpertai.dto.User.UserPhysicalDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
+import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
 import br.com.codemain.nutrixpertai.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin
-@RequestMapping(value = "/user")
+@RequestMapping("/api/user")
 @Tag(name = "Usuários")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
-    @PostMapping
-    @Operation(summary = "Cria usuário")
-    public ResponseEntity<User> create(@RequestBody UserCreateDTO userDTO) {
-        User created = userService.create(userDTO);
+    @PatchMapping(value = "physical/{id}")
+    @Operation(summary = "Atualiza peso e altura do usuário")
+    public ResponseEntity<UserResponseDTO> updateAnamnese(
+            @PathVariable("id") UUID id,
+            @RequestBody UserPhysicalDTO userPhysicalDTO) {
+        UserResponseDTO updated = userService.updatePhysical(id, userPhysicalDTO);
 
-        return ResponseEntity
-                .created(URI.create("/user/" + created.getId()))
-                .body(created);
+        return ResponseEntity.ok().body(updated);
     }
 
     @GetMapping
     @Operation(summary = "Busca todos os usuários")
-    public ResponseEntity<List<User>> getAll() {
-        return ResponseEntity.ok().body(userService.getAll());
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
+        List<UserResponseDTO> users = userService.getAll();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Busca usuário por ID")
-    public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok().body(userService.getById(id));
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable("id") UUID id) {
+        UserResponseDTO user = userService.getById(id);
+        return ResponseEntity.ok().body(user);
     }
 
     @PatchMapping(value = "/{id}")
     @Operation(summary = "Atualiza um usuário")
-    public ResponseEntity<User> update(
+    public ResponseEntity<UserResponseDTO> update(
             @PathVariable("id") UUID id,
             @RequestBody UserUpdateDTO userDTO) {
-        User updated = userService.update(id, userDTO);
+        UserResponseDTO updated = userService.update(id, userDTO);
 
         return ResponseEntity.ok().body(updated);
     }
