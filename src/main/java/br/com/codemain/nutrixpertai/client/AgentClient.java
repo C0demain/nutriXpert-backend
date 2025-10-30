@@ -25,6 +25,12 @@ public interface AgentClient {
     @PostMapping("/feedback")
     FeedbackResponseDto createFeedback(@RequestBody FeedbackRequestDto feedbackRequest);
 
+    @GetMapping("/feedback/conversa/{user_id}/{session_id}")
+    List<FeedbackResponseDto> getFeedbacksByConversation(
+            @PathVariable("user_id") String userId,
+            @PathVariable("session_id") String sessionId
+    );
+
     @GetMapping("/sessions/{user_id}/{session_id}")
     SessionInfoResponseDto getSessionMessages(
             @PathVariable("user_id") String userId,
