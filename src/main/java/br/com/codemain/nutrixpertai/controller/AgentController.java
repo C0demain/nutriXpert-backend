@@ -6,7 +6,10 @@ import br.com.codemain.nutrixpertai.client.dto.question.RunAgentRequestDto;
 import br.com.codemain.nutrixpertai.client.dto.question.RunAgentResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.session.SessionInfoResponseDto;
 import br.com.codemain.nutrixpertai.client.dto.session.SessionListItemDto;
+import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
+import br.com.codemain.nutrixpertai.service.IUserService;
 import br.com.codemain.nutrixpertai.service.impl.AgentServiceImpl;
+import br.com.codemain.nutrixpertai.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Agente IA", description = "Endpoints para interagir com o agente de IA")
 @RestController
@@ -30,9 +34,11 @@ import java.util.List;
 public class AgentController {
 
         private final AgentServiceImpl agentService;
+        private final IUserService userService;
 
-        public AgentController(AgentServiceImpl agentServiceImpl) {
+        public AgentController(AgentServiceImpl agentServiceImpl, UserServiceImpl userService) {
                 this.agentService = agentServiceImpl;
+                this.userService = userService;
         }
 
         @Operation(summary = "Executar o agente de IA", description = "Envia uma pergunta do usuário para o agente de IA processar e retorna a resposta.")
@@ -104,4 +110,11 @@ public class AgentController {
                 List<SessionListItemDto> response = agentService.listUserSessions(userId);
                 return ResponseEntity.ok(response);
         }
+
+    @GetMapping(value = "/getUserInfo/{id}")
+    @Operation(summary = "Busca usuário por ID")
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable("id") UUID id) {
+        UserResponseDTO user = userService.getById(id);
+        return ResponseEntity.ok().body(user);
+    }
 }
