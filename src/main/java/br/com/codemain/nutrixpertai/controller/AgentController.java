@@ -66,12 +66,28 @@ public class AgentController {
                         @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
                         @ApiResponse(responseCode = "422", description = "Erro de validação (ex: campos obrigatórios faltando)", content = @Content)
         })
-        
+
         @GetMapping("/feedback/conversa/{userId}/{sessionId}")
         public ResponseEntity<List<FeedbackResponseDto>> getFeedbacksByConversation(
                         @PathVariable String userId,
                         @PathVariable String sessionId) {
                 List<FeedbackResponseDto> response = agentService.getFeedbacksByConversation(userId, sessionId);
+                return ResponseEntity.ok(response);
+        }
+
+        @Operation(summary = "Retorna um feedback", description = "Retorna um feedback específico do usuário para uma mensagem específica em uma conversa com o agente.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Feedback retornado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FeedbackResponseDto.class))),
+                        @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
+                        @ApiResponse(responseCode = "422", description = "Erro de validação (ex: campos obrigatórios faltando)", content = @Content)
+        })
+
+        @GetMapping("/feedback/conversa/{userId}/{sessionId}/{messageId}")
+        public ResponseEntity<FeedbackResponseDto> getFeedbackByConversationMessage(
+                        @PathVariable String userId,
+                        @PathVariable String sessionId,
+                        @PathVariable String messageId) {
+                FeedbackResponseDto response = agentService.getFeedbackByConversationMessage(userId, sessionId, messageId);
                 return ResponseEntity.ok(response);
         }
 

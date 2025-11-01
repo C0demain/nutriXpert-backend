@@ -31,6 +31,13 @@ public interface AgentClient {
             @PathVariable("session_id") String sessionId
     );
 
+    @GetMapping("/feedback/conversa/{user_id}/{session_id}/{message_id}")
+    FeedbackResponseDto getFeedbackByConversationMessage(
+            @PathVariable("user_id") String userId,
+            @PathVariable("session_id") String sessionId,
+            @PathVariable("message_id") String messageId
+    );
+
     @GetMapping("/sessions/{user_id}/{session_id}")
     SessionInfoResponseDto getSessionMessages(
             @PathVariable("user_id") String userId,

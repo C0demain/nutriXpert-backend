@@ -74,6 +74,22 @@ public class AgentServiceImpl implements IAgentService {
     }
 
     @Override
+    public FeedbackResponseDto getFeedbackByConversationMessage(String userId, String sessionId, String messageId) {
+        log.info("Buscando feedback para usuário: {}, sessão: {} e mensagem: {}", userId, sessionId, messageId);
+        try {
+            return agentClient.getFeedbackByConversationMessage(userId, sessionId, messageId);
+
+        } catch (FeignException.NotFound e) { // Trata 404 de forma específica
+            log.warn("Feedback não encontrado. Usuário: {}, Sessão: {}, Mensagem: {}", userId, sessionId, messageId, e);
+            throw new AgentServiceException("Feedback não encontrado.", e);
+
+        } catch (FeignException e) {
+            log.error("Erro ao buscar /feedback/conversa. Status: {}. Body: {}", e.status(), e.contentUTF8(), e);
+            throw new AgentServiceException("Não foi possível buscar o feedback da conversa.", e);
+        }
+    }
+
+    @Override
     public SessionInfoResponseDto getSessionMessages(String userId, String sessionId) {
         log.info("Buscando mensagens para usuário: {} e sessão: {}", userId, sessionId);
         try {
