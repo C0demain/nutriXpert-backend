@@ -5,6 +5,7 @@ import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.service.IUserService;
 import br.com.codemain.nutrixpertai.service.impl.AgentServiceImpl;
 import br.com.codemain.nutrixpertai.service.impl.UserServiceImpl;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/interact/agent")
+@Hidden
 @SecurityRequirement(name = "Bearer Authentication")
 public class AgentRetrieveController {
 
