@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,6 +31,8 @@ import java.util.UUID;
 @SecurityRequirement(name = "Bearer Authentication")
 public class AgentRetrieveController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AgentRetrieveController.class);
+
     private final AgentServiceImpl agentService;
     private final IUserService userService;
     private final IAnamneseService anamneseService;
@@ -42,6 +46,7 @@ public class AgentRetrieveController {
 
     @GetMapping(value = "/getUserInfo/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable("id") UUID id) {
+        logger.info("Agent REQ: getById. ID: {}", id);
         UserResponseDTO user = userService.getById(id);
         return ResponseEntity.ok().body(user);
     }
@@ -50,6 +55,7 @@ public class AgentRetrieveController {
     public ResponseEntity<UserResponseDTO> updateUserWeight(
             @PathVariable("id") UUID id,
             @RequestBody UserPhysicalDTO userPhysicalDTO) {
+        logger.info("Agent REQ: updateUserWeight. ID: {}, Body: {}", id, userPhysicalDTO);
         UserResponseDTO updated = userService.updatePhysical(id, userPhysicalDTO);
 
         return ResponseEntity.ok().body(updated);
@@ -59,6 +65,7 @@ public class AgentRetrieveController {
     public ResponseEntity<UserResponseDTO> create(
             @PathVariable UUID userId,
             @RequestBody AnamneseRequestDTO requestDTO) {
+        logger.info("Agent REQ: create (anamnese). UserID: {}, Body: {}", userId, requestDTO);
         UserResponseDTO responseDTO = anamneseService.createAgent(userId, requestDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -67,6 +74,7 @@ public class AgentRetrieveController {
     public ResponseEntity<UserResponseDTO> patch(
             @PathVariable UUID userId,
             @RequestBody AnamneseRequestDTO patchRequest) {
+        logger.info("Agent REQ: patch (anamnese). UserID: {}, Body: {}", userId, patchRequest);
         UserResponseDTO responseDTO = anamneseService.patchAgent(userId, patchRequest);
         return ResponseEntity.ok(responseDTO);
     }
