@@ -1,4 +1,6 @@
 package br.com.codemain.nutrixpertai.dto.Auth;
 
-public record LoginResponseDTO(String id, String token) {
+import br.com.codemain.nutrixpertai.enums.Role;
+
+public record LoginResponseDTO(String id, String token, Role role) {
 }

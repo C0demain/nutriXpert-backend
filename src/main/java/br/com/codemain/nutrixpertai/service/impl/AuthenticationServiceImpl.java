@@ -36,7 +36,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             var auth = authenticationManager.authenticate(authToken);
             var user = (User) auth.getPrincipal();
             var token = tokenService.generateToken(user);
-            return new LoginResponseDTO(user.getId().toString(), token);
+            return new LoginResponseDTO(user.getId().toString(), token, user.getRole());
         } catch (BadCredentialsException e) {
             throw new IllegalArgumentException("E-mail ou senha inválidos");
         }

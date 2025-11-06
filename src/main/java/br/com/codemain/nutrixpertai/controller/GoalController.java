@@ -16,11 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/goals")
+@RequestMapping("/api/goals")
 @CrossOrigin(origins = "*")
 @Tag(name = "Objetivos", description = "Operações relacionadas aos objetivos nutricionais dos usuários")
 @SecurityRequirement(name = "Bearer Authentication")
