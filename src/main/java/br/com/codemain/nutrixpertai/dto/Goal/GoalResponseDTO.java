@@ -4,7 +4,7 @@ import br.com.codemain.nutrixpertai.enums.GoalType;
 
 import java.util.UUID;
 
-public record ResponseDTO(
+public record GoalResponseDTO(
         Long id,
         UUID userId,
         String description,

@@ -1,13 +1,15 @@
 package br.com.codemain.nutrixpertai.service.impl;
 
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
-import br.com.codemain.nutrixpertai.dto.Goal.ResponseDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
 import br.com.codemain.nutrixpertai.entity.Goal;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.enums.GoalType;
 import br.com.codemain.nutrixpertai.repository.GoalRepository;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
+import br.com.codemain.nutrixpertai.service.mapper.GoalMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,13 +26,15 @@ public class GoalServiceImpl {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GoalMapper goalMapper;
+
     @Transactional
-    public ResponseDTO createGoal(CreateGoalDTO dto) {
+    public GoalResponseDTO createGoal(CreateGoalDTO dto) {
         User user = userRepository.findById(dto.userId()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Goal goal = new Goal();
-        goal.setDescription(dto.description());
-        goal.setGoalType(dto.goalType());
+        Goal goal = goalMapper.toEntity(dto);
+        
         goal.setUser(user);
         goal.setTargetWeight(dto.targetWeight());
         goal.setTargetCalories(dto.targetCalories());
@@ -38,17 +42,17 @@ public class GoalServiceImpl {
 
         Goal savedGoal = goalRepository.save(goal);
 
-        return mapToResponseDTO(savedGoal);
+        return goalMapper.toResponseDTO(savedGoal);
     }
 
-    public List<ResponseDTO> getGoalsByUser(UUID userId) {
-        return goalRepository.findByUserId(userId)
+    public List<GoalResponseDTO> getGoalsByUser(UUID userId) {
+        return goalRepository.findByUser_Id(userId)
                 .stream()
-                .map(this::mapToResponseDTO)
+                .map(goalMapper::toResponseDTO)
                 .toList();
     }
 
-    public ResponseDTO getGoalById(Long goalId) {
+    public GoalResponseDTO getGoalById(Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
 
@@ -56,7 +60,7 @@ public class GoalServiceImpl {
     }
 
     @Transactional
-    public ResponseDTO updateGoal(Long goalId, UpdateGoalDTO dto) {
+    public GoalResponseDTO updateGoal(Long goalId, UpdateGoalDTO dto) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
 
@@ -117,7 +121,7 @@ public class GoalServiceImpl {
     }
 
     public String getUserGoalsFormatted(UUID userId) {
-        List<Goal> goals = goalRepository.findByUserId(userId);
+        List<Goal> goals = goalRepository.findByUser_Id(userId);
 
         if (goals.isEmpty()) {
             return "NENHUM OBJETIVO ENCONTRADO\n\nO usuario nao possui objetivos nutricionais cadastrados.";
@@ -171,15 +175,7 @@ public class GoalServiceImpl {
         };
     }
 
-    private ResponseDTO mapToResponseDTO(Goal goal) {
-        return new ResponseDTO(
-                goal.getId(),
-                goal.getUser().getId(),
-                goal.getDescription(),
-                goal.getGoalType(),
-                goal.getTargetWeight(),
-                goal.getTargetCalories(),
-                goal.getFoodRestrictions()
-        );
+    private GoalResponseDTO mapToResponseDTO(Goal goal) {
+        return goalMapper.toResponseDTO(goal);
     }
 }
