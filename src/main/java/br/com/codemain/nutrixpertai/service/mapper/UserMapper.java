@@ -2,8 +2,6 @@ package br.com.codemain.nutrixpertai.service.mapper;
 
 import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.dto.User.UserUpdateDTO;
-import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseRequestDTO;
-import br.com.codemain.nutrixpertai.entity.Anamnese;
 import br.com.codemain.nutrixpertai.entity.User;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
