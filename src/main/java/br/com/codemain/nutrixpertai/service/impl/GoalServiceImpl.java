@@ -105,7 +105,7 @@ public class GoalServiceImpl {
             formatted.append("Meta de Peso: ").append(goal.getTargetWeight()).append(" kg\n");
         }
 
-        if (goal.getTargetCalories() != 0){
+        if (goal.getTargetCalories() != 0) {
             formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
         }
 
@@ -142,7 +142,7 @@ public class GoalServiceImpl {
                 formatted.append("Meta de Peso: ").append(goal.getTargetWeight()).append(" kg\n");
             }
 
-            if (goal.getTargetCalories() != 0){
+            if (goal.getTargetCalories() != 0) {
                 formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
             }
 
