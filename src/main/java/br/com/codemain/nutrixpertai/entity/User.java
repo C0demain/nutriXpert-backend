@@ -43,13 +43,23 @@ public class User implements UserDetails {
     @JoinColumn(name = "anamnese_id", referencedColumnName = "id")
     private Anamnese anamnese;
 
-
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Meal> meals;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Goal> goals;
+
+    public List<Goal> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(List<Goal> goals) {
+        this.goals = goals;
+    }
 
     public User() {
     }
@@ -71,13 +81,13 @@ public class User implements UserDetails {
         this.weight = weight;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // TODO: Role de nutricionista
         if (this.role == Role.ADMIN)
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        //else if (this.role == Role.NUTRITIONIST) return List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        // else if (this.role == Role.NUTRITIONIST) return List.of(new
+        // SimpleGrantedAuthority("ROLE_USER"))
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

@@ -1,5 +1,6 @@
 package br.com.codemain.nutrixpertai.service.impl;
 
+import br.com.codemain.nutrixpertai.dto.User.UserResponseDTO;
 import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseRequestDTO;
 import br.com.codemain.nutrixpertai.dto.anamnese.AnamneseResponseDTO;
 import br.com.codemain.nutrixpertai.entity.Anamnese;
@@ -8,6 +9,7 @@ import br.com.codemain.nutrixpertai.repository.AnamneseRepository;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
 import br.com.codemain.nutrixpertai.service.IAnamneseService;
 import br.com.codemain.nutrixpertai.service.mapper.AnamneseMapper;
+import br.com.codemain.nutrixpertai.service.mapper.UserMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,17 @@ public class AnamneseServiceImpl implements IAnamneseService {
     private final UserRepository userRepository;
     private final AnamneseRepository anamneseRepository;
     private final AnamneseMapper anamneseMapper;
+    private final UserMapper userMapper;
 
 
-    public AnamneseServiceImpl(UserRepository userRepository, AnamneseRepository anamneseRepository, AnamneseMapper anamneseMapper) {
+    public AnamneseServiceImpl(UserRepository userRepository,
+                               AnamneseRepository anamneseRepository,
+                               AnamneseMapper anamneseMapper,
+                               UserMapper userMapper) {
         this.userRepository = userRepository;
         this.anamneseRepository = anamneseRepository;
         this.anamneseMapper = anamneseMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -44,6 +51,24 @@ public class AnamneseServiceImpl implements IAnamneseService {
 
         Anamnese savedAnamnese = anamneseRepository.save(anamnese);
         return toResponseDTO(savedAnamnese);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDTO createAgent(UUID userId, AnamneseRequestDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + userId));
+
+        if (user.getAnamnese() != null) {
+            throw new IllegalStateException("Este usuário já possui uma anamnese cadastrada.");
+        }
+
+        Anamnese anamnese = anamneseMapper.toEntity(dto);
+        anamnese.setUser(user);
+        user.setAnamnese(anamnese);
+
+        Anamnese savedAnamnese = anamneseRepository.save(anamnese);
+        return userMapper.toDTO(user);
     }
 
     @Override
@@ -77,6 +102,24 @@ public class AnamneseServiceImpl implements IAnamneseService {
 
         Anamnese patchedAnamnese = anamneseRepository.save(existingAnamnese);
         return toResponseDTO(patchedAnamnese);
+    }
+
+    @Override
+    public UserResponseDTO patchAgent(UUID userId, AnamneseRequestDTO patchRequest) {
+        Anamnese existingAnamnese = anamneseRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Anamnese não encontrada para o usuário com ID: " + userId));
+
+        applyPatchToEntity(existingAnamnese, patchRequest);
+
+
+
+        Anamnese patchedAnamnese = anamneseRepository.save(existingAnamnese);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + userId));
+
+        return userMapper.toDTO(user);
+
     }
 
     @Override
