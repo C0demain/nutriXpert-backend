@@ -3,6 +3,7 @@ package br.com.codemain.nutrixpertai.controller;
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
 import br.com.codemain.nutrixpertai.service.impl.GoalServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,6 +75,23 @@ public class GoalController {
         try {
             GoalResponseDTO goal = goalService.getGoalById(goalId);
             return ResponseEntity.ok(goal);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{goalId}/progress")
+    @Operation(
+            summary = "Buscar progresso do objetivo",
+            description = "Retorna o progresso atual do objetivo em relação às metas estabelecidas, incluindo percentuais de conclusão"
+    )
+    public ResponseEntity<GoalProgressDTO> getGoalProgress(
+            @Parameter(description = "ID único do objetivo", required = true, example = "1")
+            @PathVariable Long goalId
+    ) {
+        try {
+            GoalProgressDTO progress = goalService.getGoalProgress(goalId);
+            return ResponseEntity.ok(progress);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
