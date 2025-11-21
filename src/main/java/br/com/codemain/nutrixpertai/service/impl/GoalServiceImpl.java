@@ -143,6 +143,32 @@ public class GoalServiceImpl {
         );
     }
 
+    public List<GoalProgressDTO> getUserGoalProgress(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        return user.getGoals().stream().map(goal -> new GoalProgressDTO(
+                goal.getId(),
+                goal.getUser().getId(),
+                goal.getDescription(),
+                goal.getGoalType(),
+                calculateWeightProgress(user.getWeight(), goal.getTargetWeight(), goal.getGoalType()),
+                goal.getTargetWeight(),
+                user.getWeight(),
+                calculateProgress(goal.getCurrentCalories(), goal.getTargetCalories()),
+                goal.getTargetCalories(),
+                goal.getCurrentCalories(),
+                calculateProgress(goal.getCurrentProtein(), goal.getTargetProtein()),
+                goal.getTargetProtein(),
+                goal.getCurrentProtein(),
+                calculateProgress(goal.getCurrentCarbs(), goal.getTargetCarbs()),
+                goal.getTargetCarbs(),
+                goal.getCurrentCarbs(),
+                calculateProgress(goal.getCurrentFats(), goal.getTargetFats()),
+                goal.getTargetFats(),
+                goal.getCurrentFats()
+        )).toList();
+    }
+
     private Double calculateWeightProgress(Double currentWeight, Double targetWeight, GoalType goalType) {
         if (targetWeight == null || currentWeight == null) {
             return 0.0;

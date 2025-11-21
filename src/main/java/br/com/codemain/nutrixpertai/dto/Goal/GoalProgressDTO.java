@@ -5,7 +5,7 @@ import br.com.codemain.nutrixpertai.enums.GoalType;
 import java.util.UUID;
 
 public record GoalProgressDTO(
-        Long goalId,
+        Long id,
         UUID userId,
         String description,
         GoalType goalType,

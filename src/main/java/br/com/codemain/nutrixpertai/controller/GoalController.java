@@ -1,9 +1,9 @@
 package br.com.codemain.nutrixpertai.controller;
 
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
-import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
 import br.com.codemain.nutrixpertai.service.impl.GoalServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -80,7 +80,7 @@ public class GoalController {
         }
     }
 
-    @GetMapping("/{goalId}/progress")
+    @GetMapping("progress/{goalId}")
     @Operation(
             summary = "Buscar progresso do objetivo",
             description = "Retorna o progresso atual do objetivo em relação às metas estabelecidas, incluindo percentuais de conclusão"
@@ -95,6 +95,19 @@ public class GoalController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("progress/user/{userId}")
+    @Operation(
+            summary = "Buscar objetivos por usuário",
+            description = "Retorna o progresso atual de todos os objetivos de um usuário em relação às metas estabelecidas, incluindo percentuais de conclusão"
+    )
+    public ResponseEntity<List<GoalProgressDTO>> getGoalProgressByUser(
+            @Parameter(description = "ID único do usuário", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID userId
+    ) {
+        List<GoalProgressDTO> goals = goalService.getUserGoalProgress(userId);
+        return ResponseEntity.ok(goals);
     }
 
     @PatchMapping("/{goalId}")
