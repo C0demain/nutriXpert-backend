@@ -25,9 +25,6 @@ public class Goal {
     @Column(name = "target_weight")
     private Double targetWeight;
 
-    @Column(name = "current_weight")
-    private Double currentWeight;
-
     @Column(name = "target_calories")
     private int targetCalories;
 
@@ -111,14 +108,6 @@ public class Goal {
 
     public void setTargetWeight(Double targetWeight) {
         this.targetWeight = targetWeight;
-    }
-
-    public Double getCurrentWeight() {
-        return currentWeight;
-    }
-
-    public void setCurrentWeight(Double currentWeight) {
-        this.currentWeight = currentWeight;
     }
 
     public int getTargetCalories() {

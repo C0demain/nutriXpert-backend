@@ -10,6 +10,9 @@ public record CreateGoalDTO(
         GoalType goalType,
         Double targetWeight,
         int targetCalories,
+        Double targetProtein,
+        Double targetCarbs,
+        Double targetFats,
         String foodRestrictions
 ) {
 }

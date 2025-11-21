@@ -7,6 +7,13 @@ public record UpdateGoalDTO(
         GoalType goalType,
         Double targetWeight,
         Integer targetCalories,
+        Integer currentCalories,
+        Double targetProtein,
+        Double currentProtein,
+        Double targetCarbs,
+        Double currentCarbs,
+        Double targetFats,
+        Double currentFats,
         String foodRestrictions
 ) {
 }

@@ -3,6 +3,7 @@ package br.com.codemain.nutrixpertai.service.impl;
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.ResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
 import br.com.codemain.nutrixpertai.entity.Goal;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.enums.GoalType;
@@ -34,6 +35,9 @@ public class GoalServiceImpl {
         goal.setUser(user);
         goal.setTargetWeight(dto.targetWeight());
         goal.setTargetCalories(dto.targetCalories());
+        goal.setTargetProtein(dto.targetProtein());
+        goal.setTargetCarbs(dto.targetCarbs());
+        goal.setTargetFats(dto.targetFats());
         goal.setFoodRestrictions(dto.foodRestrictions());
 
         Goal savedGoal = goalRepository.save(goal);
@@ -72,6 +76,27 @@ public class GoalServiceImpl {
         if (dto.targetCalories() != null) {
             goal.setTargetCalories(dto.targetCalories());
         }
+        if (dto.currentCalories() != null) {
+            goal.setCurrentCalories(dto.currentCalories());
+        }
+        if (dto.targetProtein() != null) {
+            goal.setTargetProtein(dto.targetProtein());
+        }
+        if (dto.currentProtein() != null) {
+            goal.setCurrentProtein(dto.currentProtein());
+        }
+        if (dto.targetCarbs() != null) {
+            goal.setTargetCarbs(dto.targetCarbs());
+        }
+        if (dto.currentCarbs() != null) {
+            goal.setCurrentCarbs(dto.currentCarbs());
+        }
+        if (dto.targetFats() != null) {
+            goal.setTargetFats(dto.targetFats());
+        }
+        if (dto.currentFats() != null) {
+            goal.setCurrentFats(dto.currentFats());
+        }
         if (dto.foodRestrictions() != null) {
             goal.setFoodRestrictions(dto.foodRestrictions());
         }
@@ -86,6 +111,53 @@ public class GoalServiceImpl {
             throw new RuntimeException("Objetivo não encontrado");
         }
         goalRepository.deleteById(goalId);
+    }
+
+    public GoalProgressDTO getGoalProgress(Long goalId) {
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
+
+        User user = goal.getUser();
+        Double currentWeight = user.getWeight();
+
+        return new GoalProgressDTO(
+                goal.getId(),
+                goal.getUser().getId(),
+                goal.getDescription(),
+                goal.getGoalType(),
+                calculateWeightProgress(currentWeight, goal.getTargetWeight(), goal.getGoalType()),
+                goal.getTargetWeight(),
+                currentWeight,
+                calculateProgress(goal.getCurrentCalories(), goal.getTargetCalories()),
+                goal.getTargetCalories(),
+                goal.getCurrentCalories(),
+                calculateProgress(goal.getCurrentProtein(), goal.getTargetProtein()),
+                goal.getTargetProtein(),
+                goal.getCurrentProtein(),
+                calculateProgress(goal.getCurrentCarbs(), goal.getTargetCarbs()),
+                goal.getTargetCarbs(),
+                goal.getCurrentCarbs(),
+                calculateProgress(goal.getCurrentFats(), goal.getTargetFats()),
+                goal.getTargetFats(),
+                goal.getCurrentFats()
+        );
+    }
+
+    private Double calculateWeightProgress(Double currentWeight, Double targetWeight, GoalType goalType) {
+        if (targetWeight == null || currentWeight == null) {
+            return 0.0;
+        }
+        return Math.abs(currentWeight - targetWeight);
+    }
+
+    private Double calculateProgress(Number current, Number target) {
+        if (target == null || target.doubleValue() == 0) {
+            return 0.0;
+        }
+        if (current == null) {
+            return 0.0;
+        }
+        return (current.doubleValue() / target.doubleValue()) * 100;
     }
 
     public String getGoalFormatted(Long goalId) {
@@ -107,6 +179,22 @@ public class GoalServiceImpl {
 
         if (goal.getTargetCalories() != 0) {
             formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
+            formatted.append("Calorias Atuais: ").append(goal.getCurrentCalories()).append(" kcal\n");
+        }
+
+        if (goal.getTargetProtein() != null) {
+            formatted.append("Meta de Proteinas: ").append(goal.getTargetProtein()).append(" g\n");
+            formatted.append("Proteinas Atuais: ").append(goal.getCurrentProtein()).append(" g\n");
+        }
+
+        if (goal.getTargetCarbs() != null) {
+            formatted.append("Meta de Carboidratos: ").append(goal.getTargetCarbs()).append(" g\n");
+            formatted.append("Carboidratos Atuais: ").append(goal.getCurrentCarbs()).append(" g\n");
+        }
+
+        if (goal.getTargetFats() != null) {
+            formatted.append("Meta de Gorduras: ").append(goal.getTargetFats()).append(" g\n");
+            formatted.append("Gorduras Atuais: ").append(goal.getCurrentFats()).append(" g\n");
         }
 
         if (goal.getFoodRestrictions() != null && !goal.getFoodRestrictions().trim().isEmpty()) {
@@ -144,6 +232,22 @@ public class GoalServiceImpl {
 
             if (goal.getTargetCalories() != 0) {
                 formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
+                formatted.append("Calorias Atuais: ").append(goal.getCurrentCalories()).append(" kcal\n");
+            }
+
+            if (goal.getTargetProtein() != null) {
+                formatted.append("Meta de Proteinas: ").append(goal.getTargetProtein()).append(" g\n");
+                formatted.append("Proteinas Atuais: ").append(goal.getCurrentProtein()).append(" g\n");
+            }
+
+            if (goal.getTargetCarbs() != null) {
+                formatted.append("Meta de Carboidratos: ").append(goal.getTargetCarbs()).append(" g\n");
+                formatted.append("Carboidratos Atuais: ").append(goal.getCurrentCarbs()).append(" g\n");
+            }
+
+            if (goal.getTargetFats() != null) {
+                formatted.append("Meta de Gorduras: ").append(goal.getTargetFats()).append(" g\n");
+                formatted.append("Gorduras Atuais: ").append(goal.getCurrentFats()).append(" g\n");
             }
 
             if (goal.getFoodRestrictions() != null && !goal.getFoodRestrictions().trim().isEmpty()) {
@@ -179,6 +283,13 @@ public class GoalServiceImpl {
                 goal.getGoalType(),
                 goal.getTargetWeight(),
                 goal.getTargetCalories(),
+                goal.getCurrentCalories(),
+                goal.getTargetProtein(),
+                goal.getCurrentProtein(),
+                goal.getTargetCarbs(),
+                goal.getCurrentCarbs(),
+                goal.getTargetFats(),
+                goal.getCurrentFats(),
                 goal.getFoodRestrictions()
         );
     }

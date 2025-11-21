@@ -4,20 +4,25 @@ import br.com.codemain.nutrixpertai.enums.GoalType;
 
 import java.util.UUID;
 
-public record ResponseDTO(
-        Long id,
+public record GoalProgressDTO(
+        Long goalId,
         UUID userId,
         String description,
         GoalType goalType,
+        Double weightProgress,
         Double targetWeight,
-        int targetCalories,
-        int currentCalories,
+        Double currentWeight,
+        Double caloriesProgressPercentage,
+        Integer targetCalories,
+        Integer currentCalories,
+        Double proteinProgressPercentage,
         Double targetProtein,
         Double currentProtein,
+        Double carbsProgressPercentage,
         Double targetCarbs,
         Double currentCarbs,
+        Double fatsProgressPercentage,
         Double targetFats,
-        Double currentFats,
-        String foodRestrictions
+        Double currentFats
 ) {
 }
