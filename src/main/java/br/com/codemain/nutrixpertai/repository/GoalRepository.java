@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     
-    List<Goal> findByUser_Id(UUID userId);
+    List<Goal> findByUserId(UUID userId);
 }

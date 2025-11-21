@@ -1,9 +1,9 @@
 package br.com.codemain.nutrixpertai.service.impl;
 
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
-import br.com.codemain.nutrixpertai.dto.Goal.ResponseDTO;
-import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
 import br.com.codemain.nutrixpertai.entity.Goal;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.enums.GoalType;
@@ -26,7 +26,7 @@ public class GoalServiceImpl {
     private UserRepository userRepository;
 
     @Transactional
-    public ResponseDTO createGoal(CreateGoalDTO dto) {
+    public GoalResponseDTO createGoal(CreateGoalDTO dto) {
         User user = userRepository.findById(dto.userId()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         Goal goal = new Goal();
@@ -45,14 +45,14 @@ public class GoalServiceImpl {
         return mapToResponseDTO(savedGoal);
     }
 
-    public List<ResponseDTO> getGoalsByUser(UUID userId) {
+    public List<GoalResponseDTO> getGoalsByUser(UUID userId) {
         return goalRepository.findByUserId(userId)
                 .stream()
                 .map(this::mapToResponseDTO)
                 .toList();
     }
 
-    public ResponseDTO getGoalById(Long goalId) {
+    public GoalResponseDTO getGoalById(Long goalId) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
 
@@ -60,7 +60,7 @@ public class GoalServiceImpl {
     }
 
     @Transactional
-    public ResponseDTO updateGoal(Long goalId, UpdateGoalDTO dto) {
+    public GoalResponseDTO updateGoal(Long goalId, UpdateGoalDTO dto) {
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
 
@@ -275,8 +275,8 @@ public class GoalServiceImpl {
         };
     }
 
-    private ResponseDTO mapToResponseDTO(Goal goal) {
-        return new ResponseDTO(
+    private GoalResponseDTO mapToResponseDTO(Goal goal) {
+        return new GoalResponseDTO(
                 goal.getId(),
                 goal.getUser().getId(),
                 goal.getDescription(),
