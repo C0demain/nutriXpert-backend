@@ -2,6 +2,7 @@ package br.com.codemain.nutrixpertai.dto.Goal;
 
 import br.com.codemain.nutrixpertai.enums.GoalType;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record CreateGoalDTO(
@@ -13,6 +14,8 @@ public record CreateGoalDTO(
         Double targetProtein,
         Double targetCarbs,
         Double targetFats,
-        String foodRestrictions
+        String foodRestrictions,
+        LocalDate startDate,
+        LocalDate endDate
 ) {
 }

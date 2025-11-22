@@ -4,7 +4,7 @@ public record FoodResponseDTO(
         Long id,
         Long mealId,
         String foodName,
-        Double calories,
+        Integer calories,
         Double protein,
         Double carbohydrates,
         Double fat) {

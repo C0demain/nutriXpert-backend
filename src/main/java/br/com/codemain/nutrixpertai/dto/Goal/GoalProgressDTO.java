@@ -2,6 +2,7 @@ package br.com.codemain.nutrixpertai.dto.Goal;
 
 import br.com.codemain.nutrixpertai.enums.GoalType;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record GoalProgressDTO(
@@ -23,6 +24,8 @@ public record GoalProgressDTO(
         Double currentCarbs,
         Double fatsProgressPercentage,
         Double targetFats,
-        Double currentFats
+        Double currentFats,
+        LocalDateTime starDate,
+        LocalDateTime endDate
 ) {
 }

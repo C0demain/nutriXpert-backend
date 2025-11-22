@@ -4,15 +4,20 @@ import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
+import br.com.codemain.nutrixpertai.entity.Food;
 import br.com.codemain.nutrixpertai.entity.Goal;
+import br.com.codemain.nutrixpertai.entity.Meal;
 import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.enums.GoalType;
 import br.com.codemain.nutrixpertai.repository.GoalRepository;
+import br.com.codemain.nutrixpertai.repository.MealRepository;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
+import br.com.codemain.nutrixpertai.utils.helper.NutrientSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +29,9 @@ public class GoalServiceImpl {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MealRepository mealRepository;
 
     @Transactional
     public GoalResponseDTO createGoal(CreateGoalDTO dto) {
@@ -39,10 +47,18 @@ public class GoalServiceImpl {
         goal.setTargetCarbs(dto.targetCarbs());
         goal.setTargetFats(dto.targetFats());
         goal.setFoodRestrictions(dto.foodRestrictions());
+        goal.setStartDate(dto.startDate().atStartOfDay());
+        goal.setEndDate(dto.endDate().atTime(LocalTime.MAX));
 
-        Goal savedGoal = goalRepository.save(goal);
+        System.out.println("Informações atribuidas");
 
-        return mapToResponseDTO(savedGoal);
+        try {
+            Goal savedGoal = goalRepository.save(goal);
+            System.out.println("Objetivo criado!");
+            return mapToResponseDTO(savedGoal);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<GoalResponseDTO> getGoalsByUser(UUID userId) {
@@ -76,26 +92,14 @@ public class GoalServiceImpl {
         if (dto.targetCalories() != null) {
             goal.setTargetCalories(dto.targetCalories());
         }
-        if (dto.currentCalories() != null) {
-            goal.setCurrentCalories(dto.currentCalories());
-        }
         if (dto.targetProtein() != null) {
             goal.setTargetProtein(dto.targetProtein());
-        }
-        if (dto.currentProtein() != null) {
-            goal.setCurrentProtein(dto.currentProtein());
         }
         if (dto.targetCarbs() != null) {
             goal.setTargetCarbs(dto.targetCarbs());
         }
-        if (dto.currentCarbs() != null) {
-            goal.setCurrentCarbs(dto.currentCarbs());
-        }
         if (dto.targetFats() != null) {
             goal.setTargetFats(dto.targetFats());
-        }
-        if (dto.currentFats() != null) {
-            goal.setCurrentFats(dto.currentFats());
         }
         if (dto.foodRestrictions() != null) {
             goal.setFoodRestrictions(dto.foodRestrictions());
@@ -118,35 +122,9 @@ public class GoalServiceImpl {
                 .orElseThrow(() -> new RuntimeException("Objetivo não encontrado"));
 
         User user = goal.getUser();
-        Double currentWeight = user.getWeight();
+        var summary = getNutrientSummary(user.getId(), goal);
 
         return new GoalProgressDTO(
-                goal.getId(),
-                goal.getUser().getId(),
-                goal.getDescription(),
-                goal.getGoalType(),
-                calculateWeightProgress(currentWeight, goal.getTargetWeight(), goal.getGoalType()),
-                goal.getTargetWeight(),
-                currentWeight,
-                calculateProgress(goal.getCurrentCalories(), goal.getTargetCalories()),
-                goal.getTargetCalories(),
-                goal.getCurrentCalories(),
-                calculateProgress(goal.getCurrentProtein(), goal.getTargetProtein()),
-                goal.getTargetProtein(),
-                goal.getCurrentProtein(),
-                calculateProgress(goal.getCurrentCarbs(), goal.getTargetCarbs()),
-                goal.getTargetCarbs(),
-                goal.getCurrentCarbs(),
-                calculateProgress(goal.getCurrentFats(), goal.getTargetFats()),
-                goal.getTargetFats(),
-                goal.getCurrentFats()
-        );
-    }
-
-    public List<GoalProgressDTO> getUserGoalProgress(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        return user.getGoals().stream().map(goal -> new GoalProgressDTO(
                 goal.getId(),
                 goal.getUser().getId(),
                 goal.getDescription(),
@@ -154,19 +132,54 @@ public class GoalServiceImpl {
                 calculateWeightProgress(user.getWeight(), goal.getTargetWeight(), goal.getGoalType()),
                 goal.getTargetWeight(),
                 user.getWeight(),
-                calculateProgress(goal.getCurrentCalories(), goal.getTargetCalories()),
+                calculateProgress(summary.getCalories(), goal.getTargetCalories()),
                 goal.getTargetCalories(),
-                goal.getCurrentCalories(),
-                calculateProgress(goal.getCurrentProtein(), goal.getTargetProtein()),
+                summary.getCalories(),
+                calculateProgress(summary.getProteins(), goal.getTargetProtein()),
                 goal.getTargetProtein(),
-                goal.getCurrentProtein(),
-                calculateProgress(goal.getCurrentCarbs(), goal.getTargetCarbs()),
+                summary.getProteins(),
+                calculateProgress(summary.getCarbs(), goal.getTargetCarbs()),
                 goal.getTargetCarbs(),
-                goal.getCurrentCarbs(),
-                calculateProgress(goal.getCurrentFats(), goal.getTargetFats()),
+                summary.getCarbs(),
+                calculateProgress(summary.getFats(), goal.getTargetFats()),
                 goal.getTargetFats(),
-                goal.getCurrentFats()
-        )).toList();
+                summary.getFats(),
+                goal.getStartDate(),
+                goal.getEndDate()
+        );
+    }
+
+    public List<GoalProgressDTO> getUserGoalProgress(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        return user.getGoals().stream().map(goal -> {
+            var summary = getNutrientSummary(user.getId(), goal);
+
+            return new GoalProgressDTO(
+                    goal.getId(),
+                    goal.getUser().getId(),
+                    goal.getDescription(),
+                    goal.getGoalType(),
+                    calculateWeightProgress(user.getWeight(), goal.getTargetWeight(), goal.getGoalType()),
+                    goal.getTargetWeight(),
+                    user.getWeight(),
+                    calculateProgress(summary.getCalories(), goal.getTargetCalories()),
+                    goal.getTargetCalories(),
+                    summary.getCalories(),
+                    calculateProgress(summary.getProteins(), goal.getTargetProtein()),
+                    goal.getTargetProtein(),
+                    summary.getProteins(),
+                    calculateProgress(summary.getCarbs(), goal.getTargetCarbs()),
+                    goal.getTargetCarbs(),
+                    summary.getCarbs(),
+                    calculateProgress(summary.getFats(), goal.getTargetFats()),
+                    goal.getTargetFats(),
+                    summary.getFats(),
+                    goal.getStartDate(),
+                    goal.getEndDate()
+            );
+        }).toList();
     }
 
     private Double calculateWeightProgress(Double currentWeight, Double targetWeight, GoalType goalType) {
@@ -205,22 +218,18 @@ public class GoalServiceImpl {
 
         if (goal.getTargetCalories() != 0) {
             formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
-            formatted.append("Calorias Atuais: ").append(goal.getCurrentCalories()).append(" kcal\n");
         }
 
         if (goal.getTargetProtein() != null) {
             formatted.append("Meta de Proteinas: ").append(goal.getTargetProtein()).append(" g\n");
-            formatted.append("Proteinas Atuais: ").append(goal.getCurrentProtein()).append(" g\n");
         }
 
         if (goal.getTargetCarbs() != null) {
             formatted.append("Meta de Carboidratos: ").append(goal.getTargetCarbs()).append(" g\n");
-            formatted.append("Carboidratos Atuais: ").append(goal.getCurrentCarbs()).append(" g\n");
         }
 
         if (goal.getTargetFats() != null) {
             formatted.append("Meta de Gorduras: ").append(goal.getTargetFats()).append(" g\n");
-            formatted.append("Gorduras Atuais: ").append(goal.getCurrentFats()).append(" g\n");
         }
 
         if (goal.getFoodRestrictions() != null && !goal.getFoodRestrictions().trim().isEmpty()) {
@@ -258,22 +267,18 @@ public class GoalServiceImpl {
 
             if (goal.getTargetCalories() != 0) {
                 formatted.append("Meta de Calorias: ").append(goal.getTargetCalories()).append(" kcal por dia\n");
-                formatted.append("Calorias Atuais: ").append(goal.getCurrentCalories()).append(" kcal\n");
             }
 
             if (goal.getTargetProtein() != null) {
                 formatted.append("Meta de Proteinas: ").append(goal.getTargetProtein()).append(" g\n");
-                formatted.append("Proteinas Atuais: ").append(goal.getCurrentProtein()).append(" g\n");
             }
 
             if (goal.getTargetCarbs() != null) {
                 formatted.append("Meta de Carboidratos: ").append(goal.getTargetCarbs()).append(" g\n");
-                formatted.append("Carboidratos Atuais: ").append(goal.getCurrentCarbs()).append(" g\n");
             }
 
             if (goal.getTargetFats() != null) {
                 formatted.append("Meta de Gorduras: ").append(goal.getTargetFats()).append(" g\n");
-                formatted.append("Gorduras Atuais: ").append(goal.getCurrentFats()).append(" g\n");
             }
 
             if (goal.getFoodRestrictions() != null && !goal.getFoodRestrictions().trim().isEmpty()) {
@@ -309,14 +314,33 @@ public class GoalServiceImpl {
                 goal.getGoalType(),
                 goal.getTargetWeight(),
                 goal.getTargetCalories(),
-                goal.getCurrentCalories(),
                 goal.getTargetProtein(),
-                goal.getCurrentProtein(),
                 goal.getTargetCarbs(),
-                goal.getCurrentCarbs(),
                 goal.getTargetFats(),
-                goal.getCurrentFats(),
-                goal.getFoodRestrictions()
+                goal.getFoodRestrictions(),
+                goal.getStartDate(),
+                goal.getEndDate()
         );
+    }
+
+    private NutrientSummary getNutrientSummary(UUID userId, Goal goal) {
+        List<Meal> meals = mealRepository.findByUserIdAndMealDateTimeBetween(userId, goal.getStartDate(), goal.getEndDate());
+        int currentCalories = meals.stream()
+                .flatMap(meal -> meal.getFoods().stream())
+                .mapToInt(Food::getCalories)
+                .sum();
+        double currentProtein = meals.stream()
+                .flatMap(meal -> meal.getFoods().stream())
+                .mapToDouble(Food::getProtein)
+                .sum();
+        double currentCarbs = meals.stream()
+                .flatMap(meal -> meal.getFoods().stream())
+                .mapToDouble(Food::getCarbohydrates)
+                .sum();
+        double currentFats = meals.stream()
+                .flatMap(meal -> meal.getFoods().stream())
+                .mapToDouble(Food::getFat)
+                .sum();
+        return new NutrientSummary(currentCalories, currentProtein, currentCarbs, currentFats);
     }
 }

@@ -2,6 +2,9 @@ package br.com.codemain.nutrixpertai.entity;
 
 import br.com.codemain.nutrixpertai.enums.GoalType;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goals")
@@ -28,45 +31,33 @@ public class Goal {
     @Column(name = "target_calories")
     private int targetCalories;
 
-    @Column(name = "current_calories")
-    private int currentCalories;
-
     @Column(name = "target_protein")
     private Double targetProtein;
-
-    @Column(name = "current_protein")
-    private Double currentProtein;
 
     @Column(name = "target_carbs")
     private Double targetCarbs;
 
-    @Column(name = "current_carbs")
-    private Double currentCarbs;
-
     @Column(name = "target_fats")
     private Double targetFats;
-
-    @Column(name = "current_fats")
-    private Double currentFats;
 
     @Column(name = "food_restrictions", length = 500)
     private String foodRestrictions;
 
+    @Column(nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
     public Goal() {
-        startGoal();
     }
 
     public Goal(GoalType goalType, User user) {
         this.goalType = goalType;
         this.user = user;
-        startGoal();
-    }
-
-    private void startGoal() {
-        this.currentCarbs = 0.0;
-        this.currentProtein = 0.0;
-        this.currentFats = 0.0;
-        this.currentCalories = 0;
     }
 
     //Getters e Setters
@@ -118,28 +109,12 @@ public class Goal {
         this.targetCalories = targetCalories;
     }
 
-    public int getCurrentCalories() {
-        return currentCalories;
-    }
-
-    public void setCurrentCalories(int currentCalories) {
-        this.currentCalories = currentCalories;
-    }
-
     public Double getTargetProtein() {
         return targetProtein;
     }
 
     public void setTargetProtein(Double targetProtein) {
         this.targetProtein = targetProtein;
-    }
-
-    public Double getCurrentProtein() {
-        return currentProtein;
-    }
-
-    public void setCurrentProtein(Double currentProtein) {
-        this.currentProtein = currentProtein;
     }
 
     public Double getTargetCarbs() {
@@ -150,14 +125,6 @@ public class Goal {
         this.targetCarbs = targetCarbs;
     }
 
-    public Double getCurrentCarbs() {
-        return currentCarbs;
-    }
-
-    public void setCurrentCarbs(Double currentCarbs) {
-        this.currentCarbs = currentCarbs;
-    }
-
     public Double getTargetFats() {
         return targetFats;
     }
@@ -166,12 +133,20 @@ public class Goal {
         this.targetFats = targetFats;
     }
 
-    public Double getCurrentFats() {
-        return currentFats;
+    public LocalDateTime getStartDate() {
+        return startDate;
     }
 
-    public void setCurrentFats(Double currentFats) {
-        this.currentFats = currentFats;
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public String getFoodRestrictions() {
