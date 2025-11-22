@@ -48,7 +48,7 @@ public class GoalServiceImpl {
         goal.setTargetFats(dto.targetFats());
         goal.setFoodRestrictions(dto.foodRestrictions());
         goal.setStartDate(dto.startDate().atStartOfDay());
-        goal.setEndDate(dto.endDate().atTime(LocalTime.MAX));
+        goal.setEndDate(dto.endDate().atTime(23,59,59));
 
         System.out.println("Informações atribuidas");
 
