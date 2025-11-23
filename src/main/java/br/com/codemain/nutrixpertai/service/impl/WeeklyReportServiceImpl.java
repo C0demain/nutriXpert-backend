@@ -1,5 +1,21 @@
 package br.com.codemain.nutrixpertai.service.impl;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import br.com.codemain.nutrixpertai.dto.Report.WeeklyReportDTO;
 import br.com.codemain.nutrixpertai.entity.Food;
 import br.com.codemain.nutrixpertai.entity.Goal;
@@ -8,14 +24,6 @@ import br.com.codemain.nutrixpertai.entity.User;
 import br.com.codemain.nutrixpertai.repository.GoalRepository;
 import br.com.codemain.nutrixpertai.repository.MealRepository;
 import br.com.codemain.nutrixpertai.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class WeeklyReportServiceImpl {
@@ -37,8 +45,12 @@ public class WeeklyReportServiceImpl {
         LocalDate adjustedStart = weekStart.with(DayOfWeek.MONDAY);
         LocalDate weekEnd = adjustedStart.plusDays(6);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        // ✅ Verificação suave - não lança exceção se usuário não existir
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return createEmptyReport(userId, adjustedStart, weekEnd);
+        }
+        User user = userOpt.get();
 
         // Busca dados da semana
         LocalDateTime startDateTime = adjustedStart.atStartOfDay();
@@ -55,7 +67,8 @@ public class WeeklyReportServiceImpl {
 
         // Busca objetivos ativos
         List<Goal> activeGoals = goalRepository.findByUserId(userId).stream()
-                .filter(goal -> !goal.getStartDate().isAfter(endDateTime) && !goal.getEndDate().isBefore(startDateTime))
+                .filter(goal -> goal.getStartDate() != null && goal.getEndDate() != null &&
+                               !goal.getStartDate().isAfter(endDateTime) && !goal.getEndDate().isBefore(startDateTime))
                 .collect(Collectors.toList());
 
         WeeklyReportDTO.NutrientSummaryDTO nutrientSummary =
@@ -86,6 +99,11 @@ public class WeeklyReportServiceImpl {
     }
 
     private WeeklyReportDTO.NutrientSummaryDTO generateNutrientSummary(List<Meal> meals) {
+        // ✅ Proteção contra lista vazia
+        if (meals == null || meals.isEmpty()) {
+            return new WeeklyReportDTO.NutrientSummaryDTO(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+
         double totalCalories = 0;
         double totalProtein = 0;
         double totalCarbs = 0;
@@ -93,11 +111,13 @@ public class WeeklyReportServiceImpl {
         int totalMeals = meals.size();
 
         for (Meal meal : meals) {
-            for (Food food : meal.getFoods()) {
-                totalCalories += food.getCalories();
-                totalProtein += food.getProtein();
-                totalCarbs += food.getCarbohydrates();
-                totalFat += food.getFat();
+            if (meal.getFoods() != null) {
+                for (Food food : meal.getFoods()) {
+                    totalCalories += food.getCalories() != null ? food.getCalories() : 0;
+                    totalProtein += food.getProtein() != null ? food.getProtein() : 0;
+                    totalCarbs += food.getCarbohydrates() != null ? food.getCarbohydrates() : 0;
+                    totalFat += food.getFat() != null ? food.getFat() : 0;
+                }
             }
         }
 
@@ -118,6 +138,11 @@ public class WeeklyReportServiceImpl {
     private List<WeeklyReportDTO.GoalProgressSummaryDTO> generateGoalsProgress(
             List<Goal> goals, List<Meal> meals, User user) {
 
+        // ✅ Proteção contra metas vazias
+        if (goals == null || goals.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         List<WeeklyReportDTO.GoalProgressSummaryDTO> progressList = new ArrayList<>();
 
         for (Goal goal : goals) {
@@ -126,12 +151,16 @@ public class WeeklyReportServiceImpl {
             double totalCarbs = 0;
             double totalFat = 0;
 
-            for (Meal meal : meals) {
-                for (Food food : meal.getFoods()) {
-                    totalCalories += food.getCalories();
-                    totalProtein += food.getProtein();
-                    totalCarbs += food.getCarbohydrates();
-                    totalFat += food.getFat();
+            if (meals != null) {
+                for (Meal meal : meals) {
+                    if (meal.getFoods() != null) {
+                        for (Food food : meal.getFoods()) {
+                            totalCalories += food.getCalories() != null ? food.getCalories() : 0;
+                            totalProtein += food.getProtein() != null ? food.getProtein() : 0;
+                            totalCarbs += food.getCarbohydrates() != null ? food.getCarbohydrates() : 0;
+                            totalFat += food.getFat() != null ? food.getFat() : 0;
+                        }
+                    }
                 }
             }
 
@@ -165,7 +194,7 @@ public class WeeklyReportServiceImpl {
             progressList.add(new WeeklyReportDTO.GoalProgressSummaryDTO(
                     goal.getId(),
                     goal.getDescription(),
-                    goal.getGoalType().toString(),
+                    goal.getGoalType() != null ? goal.getGoalType().toString() : "UNKNOWN",
                     caloriesProgress,
                     proteinProgress,
                     carbsProgress,
@@ -179,15 +208,23 @@ public class WeeklyReportServiceImpl {
     }
 
     private WeeklyReportDTO.MealStatisticsDTO generateMealStatistics(List<Meal> meals) {
+        // ✅ Proteção contra lista vazia
+        if (meals == null || meals.isEmpty()) {
+            return new WeeklyReportDTO.MealStatisticsDTO(new HashMap<>(), 0, new ArrayList<>());
+        }
+
         Map<String, Integer> mealsByType = new HashMap<>();
         Map<LocalDate, Set<String>> dailyMealTypes = new HashMap<>();
 
         for (Meal meal : meals) {
+            if (meal.getType() == null) continue;
             String type = meal.getType().toString();
             mealsByType.put(type, mealsByType.getOrDefault(type, 0) + 1);
 
-            LocalDate date = meal.getMealDateTime().toLocalDate();
-            dailyMealTypes.computeIfAbsent(date, k -> new HashSet<>()).add(type);
+            if (meal.getMealDateTime() != null) {
+                LocalDate date = meal.getMealDateTime().toLocalDate();
+                dailyMealTypes.computeIfAbsent(date, k -> new HashSet<>()).add(type);
+            }
         }
 
         List<String> mostSkippedMealTypes = mealsByType.entrySet().stream()
@@ -205,6 +242,10 @@ public class WeeklyReportServiceImpl {
     }
 
     private WeeklyReportDTO.WeekComparisonDTO generateWeekComparison(List<Meal> currentWeek, List<Meal> previousWeek) {
+        // ✅ Proteção contra listas vazias
+        if (currentWeek == null) currentWeek = new ArrayList<>();
+        if (previousWeek == null) previousWeek = new ArrayList<>();
+
         double currentCalories = calculateTotalNutrient(currentWeek, "calories");
         double previousCalories = calculateTotalNutrient(previousWeek, "calories");
 
@@ -238,13 +279,16 @@ public class WeeklyReportServiceImpl {
     }
 
     private double calculateTotalNutrient(List<Meal> meals, String nutrient) {
+        if (meals == null || meals.isEmpty()) return 0.0;
+        
         return meals.stream()
+                .filter(meal -> meal.getFoods() != null)
                 .flatMap(meal -> meal.getFoods().stream())
                 .mapToDouble(food -> switch (nutrient) {
-                    case "calories" -> food.getCalories();
-                    case "protein" -> food.getProtein();
-                    case "carbs" -> food.getCarbohydrates();
-                    case "fat" -> food.getFat();
+                    case "calories" -> food.getCalories() != null ? food.getCalories() : 0.0;
+                    case "protein" -> food.getProtein() != null ? food.getProtein() : 0.0;
+                    case "carbs" -> food.getCarbohydrates() != null ? food.getCarbohydrates() : 0.0;
+                    case "fat" -> food.getFat() != null ? food.getFat() : 0.0;
                     default -> 0.0;
                 })
                 .sum();
@@ -253,12 +297,15 @@ public class WeeklyReportServiceImpl {
     private List<WeeklyReportDTO.DailySummaryDTO> generateDailySummaries(
             List<Meal> meals, LocalDate weekStart, LocalDate weekEnd, List<Goal> goals) {
 
+        if (meals == null) meals = new ArrayList<>();
+        if (goals == null) goals = new ArrayList<>();
+
         List<WeeklyReportDTO.DailySummaryDTO> summaries = new ArrayList<>();
 
         for (LocalDate date = weekStart; !date.isAfter(weekEnd); date = date.plusDays(1)) {
             LocalDate currentDate = date;
             List<Meal> dayMeals = meals.stream()
-                    .filter(m -> m.getMealDateTime().toLocalDate().equals(currentDate))
+                    .filter(m -> m.getMealDateTime() != null && m.getMealDateTime().toLocalDate().equals(currentDate))
                     .toList();
 
             double totalCalories = 0;
@@ -267,15 +314,18 @@ public class WeeklyReportServiceImpl {
             double totalFat = 0;
 
             for (Meal meal : dayMeals) {
-                for (Food food : meal.getFoods()) {
-                    totalCalories += food.getCalories();
-                    totalProtein += food.getProtein();
-                    totalCarbs += food.getCarbohydrates();
-                    totalFat += food.getFat();
+                if (meal.getFoods() != null) {
+                    for (Food food : meal.getFoods()) {
+                        totalCalories += food.getCalories() != null ? food.getCalories() : 0;
+                        totalProtein += food.getProtein() != null ? food.getProtein() : 0;
+                        totalCarbs += food.getCarbohydrates() != null ? food.getCarbohydrates() : 0;
+                        totalFat += food.getFat() != null ? food.getFat() : 0;
+                    }
                 }
             }
 
             List<String> mealTypes = dayMeals.stream()
+                    .filter(m -> m.getType() != null)
                     .map(m -> m.getType().toString())
                     .distinct()
                     .collect(Collectors.toList());
@@ -299,7 +349,7 @@ public class WeeklyReportServiceImpl {
 
     private boolean checkIfGoalsMet(List<Goal> goals, double calories,
                                     double protein, double carbs, double fat) {
-        if (goals.isEmpty()) return false;
+        if (goals == null || goals.isEmpty()) return false;
 
         for (Goal goal : goals) {
             boolean caloriesMet = Math.abs(calories - goal.getTargetCalories())
@@ -317,6 +367,39 @@ public class WeeklyReportServiceImpl {
         }
 
         return false;
+    }
+
+    /**
+     * Cria um relatório vazio para usuários sem dados ou não encontrados
+     */
+    private WeeklyReportDTO createEmptyReport(UUID userId, LocalDate weekStart, LocalDate weekEnd) {
+        WeeklyReportDTO.NutrientSummaryDTO emptyNutrients = 
+            new WeeklyReportDTO.NutrientSummaryDTO(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        
+        WeeklyReportDTO.MealStatisticsDTO emptyStats = 
+            new WeeklyReportDTO.MealStatisticsDTO(new HashMap<>(), 0, new ArrayList<>());
+        
+        WeeklyReportDTO.WeekComparisonDTO emptyComparison = 
+            new WeeklyReportDTO.WeekComparisonDTO(0, 0, 0, 0, 0, "stable");
+        
+        // Gera dias vazios para a semana
+        List<WeeklyReportDTO.DailySummaryDTO> dailySummaries = new ArrayList<>();
+        for (LocalDate date = weekStart; !date.isAfter(weekEnd); date = date.plusDays(1)) {
+            dailySummaries.add(new WeeklyReportDTO.DailySummaryDTO(
+                date, 0, 0, 0, 0, 0, false, new ArrayList<>()
+            ));
+        }
+        
+        return new WeeklyReportDTO(
+            weekStart,
+            weekEnd,
+            userId.toString(),
+            emptyNutrients,
+            new ArrayList<>(), // sem metas
+            emptyStats,
+            emptyComparison,
+            dailySummaries
+        );
     }
 
     @Transactional(readOnly = true)
