@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record FeedbackRequestDto(
+        String session_id,
         String message_id,
         String user_id,
 

@@ -15,6 +15,10 @@ public interface IAgentService {
 
     public FeedbackResponseDto executeFeedback(FeedbackRequestDto requestDto);
 
+    public List<FeedbackResponseDto> getFeedbacksByConversation(String userId, String sessionId);
+
+    public FeedbackResponseDto getFeedbackByConversationMessage(String userId, String sessionId, String messageId);
+
     public SessionInfoResponseDto getSessionMessages(String userId, String sessionId);
 
     public List<SessionListItemDto> listUserSessions(String userId);

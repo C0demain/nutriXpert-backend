@@ -2,6 +2,9 @@ package br.com.codemain.nutrixpertai.entity;
 
 import br.com.codemain.nutrixpertai.enums.GoalType;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goals")
@@ -28,8 +31,26 @@ public class Goal {
     @Column(name = "target_calories")
     private int targetCalories;
 
+    @Column(name = "target_protein")
+    private Double targetProtein;
+
+    @Column(name = "target_carbs")
+    private Double targetCarbs;
+
+    @Column(name = "target_fats")
+    private Double targetFats;
+
     @Column(name = "food_restrictions", length = 500)
     private String foodRestrictions;
+
+    @Column(nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public Goal() {
     }
@@ -39,6 +60,7 @@ public class Goal {
         this.user = user;
     }
 
+    //Getters e Setters
     public Long getId() {
         return id;
     }
@@ -85,6 +107,46 @@ public class Goal {
 
     public void setTargetCalories(int targetCalories) {
         this.targetCalories = targetCalories;
+    }
+
+    public Double getTargetProtein() {
+        return targetProtein;
+    }
+
+    public void setTargetProtein(Double targetProtein) {
+        this.targetProtein = targetProtein;
+    }
+
+    public Double getTargetCarbs() {
+        return targetCarbs;
+    }
+
+    public void setTargetCarbs(Double targetCarbs) {
+        this.targetCarbs = targetCarbs;
+    }
+
+    public Double getTargetFats() {
+        return targetFats;
+    }
+
+    public void setTargetFats(Double targetFats) {
+        this.targetFats = targetFats;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public String getFoodRestrictions() {

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,6 +43,13 @@ public class SecurityConfigurations {
                         .requestMatchers("/v3/api-docs*/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers("/api/interact/agent/**").access((authentication, context) -> {
+                            String token = context.getRequest().getHeader("LOCAL-TOKEN");
+                            if (localToken.equals(token)) {
+                                return new AuthorizationDecision(true);
+                            }
+                            return new AuthorizationDecision(false);
+                        })
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -54,7 +62,7 @@ public class SecurityConfigurations {
 
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
 
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
         configuration.setAllowedHeaders(List.of("*"));
 

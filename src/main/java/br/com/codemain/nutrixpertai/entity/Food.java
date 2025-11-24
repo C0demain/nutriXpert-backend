@@ -18,7 +18,7 @@ public class Food {
     private String foodName;
 
     @Column(nullable = false)
-    private Double calories;
+    private Integer calories;
 
     @Column(nullable = false)
     private Double protein;
@@ -32,7 +32,7 @@ public class Food {
     public Food() {
     }
 
-    public Food(Meal meal, String foodName, Double calories, Double protein, Double carbohydrates, Double fat) {
+    public Food(Meal meal, String foodName, Integer calories, Double protein, Double carbohydrates, Double fat) {
         this.meal = meal;
         this.foodName = foodName;
         this.calories = calories;
@@ -65,11 +65,11 @@ public class Food {
         this.foodName = foodName;
     }
 
-    public Double getCalories() {
+    public Integer getCalories() {
         return calories;
     }
 
-    public void setCalories(Double calories) {
+    public void setCalories(Integer calories) {
         this.calories = calories;
     }
 

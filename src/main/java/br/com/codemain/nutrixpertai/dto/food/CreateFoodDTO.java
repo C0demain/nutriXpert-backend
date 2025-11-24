@@ -13,7 +13,7 @@ public record CreateFoodDTO(
 
         @NotNull(message = "Calorias são obrigatórias")
         @Positive(message = "Calorias devem ser positivas")
-        Double calories,
+        Integer calories,
 
         @NotNull(message = "Proteínas são obrigatórias")
         @Positive(message = "Proteínas devem ser positivas")

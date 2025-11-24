@@ -1,7 +1,8 @@
 package br.com.codemain.nutrixpertai.controller;
 
 import br.com.codemain.nutrixpertai.dto.Goal.CreateGoalDTO;
-import br.com.codemain.nutrixpertai.dto.Goal.ResponseDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalProgressDTO;
+import br.com.codemain.nutrixpertai.dto.Goal.GoalResponseDTO;
 import br.com.codemain.nutrixpertai.dto.Goal.UpdateGoalDTO;
 import br.com.codemain.nutrixpertai.service.impl.GoalServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +34,7 @@ public class GoalController {
             summary = "Criar novo objetivo nutricional",
             description = "Cria um novo objetivo nutricional para o usuário com base nas informações fornecidas"
     )
-    public ResponseEntity<ResponseDTO> createGoal(
+    public ResponseEntity<GoalResponseDTO> createGoal(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dados para criação do objetivo nutricional",
                     required = true,
@@ -42,7 +43,7 @@ public class GoalController {
             @RequestBody CreateGoalDTO dto
     ) {
         try {
-            ResponseDTO goal = goalService.createGoal(dto);
+            GoalResponseDTO goal = goalService.createGoal(dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(goal);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
@@ -54,11 +55,11 @@ public class GoalController {
             summary = "Buscar objetivos por usuário",
             description = "Retorna todos os objetivos nutricionais de um usuário específico"
     )
-    public ResponseEntity<List<ResponseDTO>> getGoalsByUser(
+    public ResponseEntity<List<GoalResponseDTO>> getGoalsByUser(
             @Parameter(description = "ID único do usuário", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID userId
     ) {
-        List<ResponseDTO> goals = goalService.getGoalsByUser(userId);
+        List<GoalResponseDTO> goals = goalService.getGoalsByUser(userId);
         return ResponseEntity.ok(goals);
     }
 
@@ -67,16 +68,46 @@ public class GoalController {
             summary = "Buscar objetivo por ID",
             description = "Retorna um objetivo nutricional específico pelo seu ID"
     )
-    public ResponseEntity<ResponseDTO> getGoalById(
+    public ResponseEntity<GoalResponseDTO> getGoalById(
             @Parameter(description = "ID único do objetivo", required = true, example = "1")
             @PathVariable Long goalId
     ) {
         try {
-            ResponseDTO goal = goalService.getGoalById(goalId);
+            GoalResponseDTO goal = goalService.getGoalById(goalId);
             return ResponseEntity.ok(goal);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("progress/{goalId}")
+    @Operation(
+            summary = "Buscar progresso do objetivo",
+            description = "Retorna o progresso atual do objetivo em relação às metas estabelecidas, incluindo percentuais de conclusão"
+    )
+    public ResponseEntity<GoalProgressDTO> getGoalProgress(
+            @Parameter(description = "ID único do objetivo", required = true, example = "1")
+            @PathVariable Long goalId
+    ) {
+        try {
+            GoalProgressDTO progress = goalService.getGoalProgress(goalId);
+            return ResponseEntity.ok(progress);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("progress/user/{userId}")
+    @Operation(
+            summary = "Buscar objetivos por usuário",
+            description = "Retorna o progresso atual de todos os objetivos de um usuário em relação às metas estabelecidas, incluindo percentuais de conclusão"
+    )
+    public ResponseEntity<List<GoalProgressDTO>> getGoalProgressByUser(
+            @Parameter(description = "ID único do usuário", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID userId
+    ) {
+        List<GoalProgressDTO> goals = goalService.getUserGoalProgress(userId);
+        return ResponseEntity.ok(goals);
     }
 
     @PatchMapping("/{goalId}")
@@ -84,7 +115,7 @@ public class GoalController {
             summary = "Atualizar objetivo existente",
             description = "Atualiza parcial ou totalmente um objetivo nutricional existente"
     )
-    public ResponseEntity<ResponseDTO> updateGoal(
+    public ResponseEntity<GoalResponseDTO> updateGoal(
             @Parameter(description = "ID único do objetivo", required = true, example = "1")
             @PathVariable Long goalId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -95,7 +126,7 @@ public class GoalController {
             @RequestBody UpdateGoalDTO dto
     ) {
         try {
-            ResponseDTO updatedGoal = goalService.updateGoal(goalId, dto);
+            GoalResponseDTO updatedGoal = goalService.updateGoal(goalId, dto);
             return ResponseEntity.ok(updatedGoal);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
